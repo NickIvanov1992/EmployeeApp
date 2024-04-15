@@ -1,6 +1,6 @@
 ﻿namespace EmployeeApp
 {
-	partial class Form1
+	partial class StartForm
 	{
 		/// <summary>
 		///  Required designer variable.
@@ -63,6 +63,7 @@
 			CreateCompanyButton.TabIndex = 2;
 			CreateCompanyButton.Text = "Создать организацию";
 			CreateCompanyButton.UseVisualStyleBackColor = true;
+			CreateCompanyButton.Click += CreateCompanyButton_Click;
 			// 
 			// AddEmployeesButton
 			// 
@@ -73,8 +74,9 @@
 			AddEmployeesButton.TabIndex = 3;
 			AddEmployeesButton.Text = "Добавить сотрудников";
 			AddEmployeesButton.UseVisualStyleBackColor = true;
+			AddEmployeesButton.Click += AddEmployeesButton_Click;
 			// 
-			// Form1
+			// StartForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
@@ -83,7 +85,7 @@
 			Controls.Add(CreateCompanyButton);
 			Controls.Add(pictureBox1);
 			Controls.Add(label1);
-			Name = "Form1";
+			Name = "StartForm";
 			Text = "Form1";
 			Load += Form1_Load;
 			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
