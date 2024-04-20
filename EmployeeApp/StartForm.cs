@@ -30,5 +30,12 @@ namespace EmployeeApp
 			selectCompanyForm.Show();
 			Hide();
 		}
+
+		private void DeleteCompanyButton_Click(object sender, EventArgs e)
+		{
+			DeleteCompanyForm deleteCompanyForm = new();
+			deleteCompanyForm.Show();
+			Hide();
+		}
 	}
 }

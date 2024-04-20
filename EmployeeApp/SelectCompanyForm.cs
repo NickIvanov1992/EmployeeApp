@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EmployeeApp.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,14 +14,69 @@ namespace EmployeeApp
 {
 	public partial class SelectCompanyForm : Form
 	{
+		EF.AppContext appContext;
+		List<Company> companies = new List<Company>();
+		DataTable table = new();
 		public SelectCompanyForm()
 		{
 			InitializeComponent();
+			appContext = new EF.AppContext();
+			companies = appContext.Companies.ToList();
+			table.Columns.Add("Id", typeof(int));
+			table.Columns.Add("Название", typeof(string));
+			table.Columns.Add("ИНН", typeof(string));
+			CompaniesDataGridView.AllowUserToAddRows = false;
+			CompaniesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+			CompaniesDataGridView.MultiSelect = false;
+			CompaniesDataGridView.RowHeadersVisible = false;
 		}
-		private void CancelButton_Click(object sender, EventArgs e)
+
+		private void CancelButton_Click_1(object sender, EventArgs e)
 		{
 			StartForm startForm = new();
 			startForm.Show();
+			Hide();
+		}
+
+		private void SearchButton_Click(object sender, EventArgs e)
+		{
+			string searchCompany = SearchCompanyTextBox.Text;
+			Company company = appContext.Companies.FirstOrDefault(c => c.INN == searchCompany);
+
+			table.Clear();
+			table.Rows.Add(company.Id, company.Name, company.INN);
+			CompaniesDataGridView.DataSource = table;
+		}
+
+		private void CompaniesDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+		{
+
+		}
+
+		private void SelectCompanyForm_Load(object sender, EventArgs e)
+		{
+			List<Company> companies = appContext.Companies.ToList();
+			for (int i = 0; i < companies.Count(); i++)
+			{
+				table.Rows.Add(companies[i].Id, companies[i].Name, companies[i].INN);
+			}
+			CompaniesDataGridView.DataSource = table;
+		}
+
+		private void SelectButton_Click(object sender, EventArgs e)
+		{
+			if (CompaniesDataGridView.SelectedRows.Count < 1)
+				return;
+
+			int index = CompaniesDataGridView.SelectedRows[0].Index;
+			int id = 0;
+			bool converted = Int32.TryParse(CompaniesDataGridView[0, index].Value.ToString(), out id);
+
+			if (!converted)
+				return;
+
+			EditCompanyForm editcompanyform = new EditCompanyForm(id);
+			editcompanyform.Show();
 			Hide();
 		}
 	}

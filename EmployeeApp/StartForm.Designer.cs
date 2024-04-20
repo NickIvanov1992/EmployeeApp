@@ -32,6 +32,7 @@
 			pictureBox1 = new PictureBox();
 			CreateCompanyButton = new Button();
 			AddEmployeesButton = new Button();
+			DeleteCompanyButton = new Button();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
 			SuspendLayout();
 			// 
@@ -68,7 +69,7 @@
 			// AddEmployeesButton
 			// 
 			AddEmployeesButton.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
-			AddEmployeesButton.Location = new Point(48, 213);
+			AddEmployeesButton.Location = new Point(48, 201);
 			AddEmployeesButton.Name = "AddEmployeesButton";
 			AddEmployeesButton.Size = new Size(304, 39);
 			AddEmployeesButton.TabIndex = 3;
@@ -76,11 +77,23 @@
 			AddEmployeesButton.UseVisualStyleBackColor = true;
 			AddEmployeesButton.Click += AddEmployeesButton_Click;
 			// 
+			// DeleteCompanyButton
+			// 
+			DeleteCompanyButton.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
+			DeleteCompanyButton.Location = new Point(48, 246);
+			DeleteCompanyButton.Name = "DeleteCompanyButton";
+			DeleteCompanyButton.Size = new Size(304, 39);
+			DeleteCompanyButton.TabIndex = 4;
+			DeleteCompanyButton.Text = "Удалить организацию";
+			DeleteCompanyButton.UseVisualStyleBackColor = true;
+			DeleteCompanyButton.Click += DeleteCompanyButton_Click;
+			// 
 			// StartForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(404, 294);
+			Controls.Add(DeleteCompanyButton);
 			Controls.Add(AddEmployeesButton);
 			Controls.Add(CreateCompanyButton);
 			Controls.Add(pictureBox1);
@@ -99,5 +112,6 @@
 		private PictureBox pictureBox1;
 		private Button CreateCompanyButton;
 		private Button AddEmployeesButton;
+		private Button DeleteCompanyButton;
 	}
 }

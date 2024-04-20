@@ -1,6 +1,6 @@
 ﻿namespace EmployeeApp
 {
-	partial class AddEmployeesForm
+	partial class AddEmployeeForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -38,11 +38,11 @@
 			textBox1 = new TextBox();
 			textBox2 = new TextBox();
 			textBox3 = new TextBox();
-			textBox4 = new TextBox();
 			textBox5 = new TextBox();
 			textBox6 = new TextBox();
 			button1 = new Button();
 			button2 = new Button();
+			dateTimePicker1 = new DateTimePicker();
 			SuspendLayout();
 			// 
 			// label1
@@ -54,7 +54,6 @@
 			label1.Size = new Size(169, 20);
 			label1.TabIndex = 0;
 			label1.Text = "Добавить сотрудника:";
-
 			// 
 			// label2
 			// 
@@ -131,13 +130,6 @@
 			textBox3.Size = new Size(217, 23);
 			textBox3.TabIndex = 9;
 			// 
-			// textBox4
-			// 
-			textBox4.Location = new Point(145, 146);
-			textBox4.Name = "textBox4";
-			textBox4.Size = new Size(100, 23);
-			textBox4.TabIndex = 10;
-			// 
 			// textBox5
 			// 
 			textBox5.Location = new Point(145, 175);
@@ -160,6 +152,7 @@
 			button1.TabIndex = 13;
 			button1.Text = "Добавить";
 			button1.UseVisualStyleBackColor = true;
+			button1.Click += button1_Click;
 			// 
 			// button2
 			// 
@@ -170,16 +163,23 @@
 			button2.Text = "Отменить";
 			button2.UseVisualStyleBackColor = true;
 			// 
+			// dateTimePicker1
+			// 
+			dateTimePicker1.Location = new Point(145, 146);
+			dateTimePicker1.Name = "dateTimePicker1";
+			dateTimePicker1.Size = new Size(200, 23);
+			dateTimePicker1.TabIndex = 15;
+			// 
 			// AddEmployeeForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(516, 287);
+			Controls.Add(dateTimePicker1);
 			Controls.Add(button2);
 			Controls.Add(button1);
 			Controls.Add(textBox6);
 			Controls.Add(textBox5);
-			Controls.Add(textBox4);
 			Controls.Add(textBox3);
 			Controls.Add(textBox2);
 			Controls.Add(textBox1);
@@ -192,6 +192,7 @@
 			Controls.Add(label1);
 			Name = "AddEmployeeForm";
 			Text = "AddEmployeeForm";
+			Load += AddEmployeeForm_Load;
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -205,13 +206,13 @@
 		private Label label5;
 		private Label label6;
 		private Label label7;
-		private TextBox textBox1;
-		private TextBox textBox2;
-		private TextBox textBox3;
-		private TextBox textBox4;
-		private TextBox textBox5;
-		private TextBox textBox6;
 		private Button button1;
 		private Button button2;
+		public TextBox textBox1;
+		public TextBox textBox2;
+		public TextBox textBox3;
+		public TextBox textBox5;
+		public TextBox textBox6;
+		public DateTimePicker dateTimePicker1;
 	}
 }
