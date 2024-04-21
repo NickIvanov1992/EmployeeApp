@@ -106,6 +106,7 @@
 			DeleteButton.TabIndex = 6;
 			DeleteButton.Text = "Удалить";
 			DeleteButton.UseVisualStyleBackColor = true;
+			DeleteButton.Click += DeleteButton_Click;
 			// 
 			// UploadCsvButton
 			// 

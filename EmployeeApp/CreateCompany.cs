@@ -40,6 +40,10 @@ namespace EmployeeApp
 			appContext.Companies.Add(company);
 			appContext.SaveChanges();
 			MessageBox.Show("Компания создана");
+
+			StartForm startForm = new();
+			startForm.Show();
+			Hide();
 		}
 	}
 }

@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using EmployeeApp.EF;
 using EmployeeApp.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EmployeeApp
 {
@@ -20,13 +22,15 @@ namespace EmployeeApp
 		EF.AppContext appContext;
 		List<Employee> employees = new List<Employee>();
 		DataTable table = new();
+		private readonly int companyId;
 		public EditCompanyForm(int id)
 		{
 			InitializeComponent();
 			appContext = new EF.AppContext();
-			employees = appContext.Employees.FromSqlRaw("SELECT * FROM Employees " +
+			SqlParameter sqlParameter = new SqlParameter("@id", id);
+			employees = appContext.Employees.FromSqlRaw($"SELECT * FROM Employees " +
 				"JOIN dbo.EmployeesCompanies ON " +
-				"Employees.ID=dbo.EmployeesCompanies.EmployeeId").ToList();
+				"Employees.ID=dbo.EmployeesCompanies.EmployeeId WHERE CompanyId= @id", sqlParameter).ToList();
 
 			table.Columns.Add("Id", typeof(int));
 			table.Columns.Add("Фамилия", typeof(string));
@@ -35,14 +39,15 @@ namespace EmployeeApp
 			table.Columns.Add("Дата рождения", typeof(DateTime));
 			table.Columns.Add("Паспорт серия", typeof(int));
 			table.Columns.Add("Паспорт номер", typeof(int));
-			
+
 			EmployeeDataGreed.AllowUserToAddRows = false;
 			EmployeeDataGreed.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 			EmployeeDataGreed.MultiSelect = false;
 			EmployeeDataGreed.RowHeadersVisible = false;
-			//employees = appContext.Employees.FromSqlRaw("SELECT * FROM Employees JOIN dbo.EmployeesCompanies ON Employees.ID=dbo.EmployeesCompanies.EmployeeId").ToList();
-			//dataGridView1.DataSource = appContext.Employees.Local.ToBindingList();
-			//CompanyNameLabel.Text = appContext.Companies.Where(c =>c.Id == id).Select(c => c.Name).ToString();
+
+			companyId = id;
+			string companyName = appContext.Companies.Find(id).Name;
+			CompanyNameLabel.Text = companyName;
 		}
 
 		private void ReturnButton_Click(object sender, EventArgs e)
@@ -54,10 +59,10 @@ namespace EmployeeApp
 
 		private void AddButton_Click(object sender, EventArgs e)
 		{
-			AddEmployeeForm employeeForm = new AddEmployeeForm();
+			AddEmployeeForm employeeForm = new AddEmployeeForm(companyId);
 			employeeForm.Show();
 			Hide();
-			
+
 		}
 
 		private void label3_Click(object sender, EventArgs e)
@@ -67,12 +72,49 @@ namespace EmployeeApp
 
 		private void EditCompanyForm_Load(object sender, EventArgs e)
 		{
-			foreach(var item in employees)
+			foreach (var item in employees)
 			{
 				table.Rows.Add(item.Id, item.Surname, item.Name, item.Middlename,
 					item.DateOfBirth, item.PassportSeries, item.PassportNumber);
 			}
 			EmployeeDataGreed.DataSource = table;
+		}
+
+		private async void DeleteButton_Click(object sender, EventArgs e)
+		{
+			if (EmployeeDataGreed.SelectedRows.Count < 1)
+				return;
+
+			int index = EmployeeDataGreed.SelectedRows[0].Index;
+			int id = 0;
+			bool converted = Int32.TryParse(EmployeeDataGreed[0, index].Value.ToString(), out id);
+			if (converted == false)
+				return;
+
+			using (SqlConnection connection = new SqlConnection(Program.connectionString))
+			{
+				connection.OpenAsync();
+				SqlTransaction transaction = connection.BeginTransaction();
+				SqlCommand sqlCommand = connection.CreateCommand();
+				sqlCommand.Transaction = transaction;
+
+				try
+				{
+					sqlCommand.CommandText = String.Format("DELETE FROM dbo.EmployeesCompanies " +
+						"WHERE EmployeeId = '{0}'", id);
+					await sqlCommand.ExecuteNonQueryAsync();
+					///////
+					await transaction.CommitAsync();
+					MessageBox.Show("Сотрудник удален");
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message);
+					await transaction.RollbackAsync();
+				}
+			}
+
+			Refresh();
 		}
 	}
 }

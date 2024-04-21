@@ -10,10 +10,11 @@ namespace EmployeeApp.EF
 {
 	public class AppContext : DbContext
 	{
+		string connection = Program.connectionString;
 		public AppContext() => Database.EnsureCreated();
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer("Data Source=DESKTOP-VOPPTIR;Initial Catalog=TestCompanies;User ID=userNick;Password=sa;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+			optionsBuilder.UseSqlServer(connection);
 		}
 		public DbSet<Employee> Employees { get; set; }
 		public DbSet<Company> Companies { get; set; }

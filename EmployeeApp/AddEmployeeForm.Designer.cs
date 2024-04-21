@@ -43,6 +43,7 @@
 			button1 = new Button();
 			button2 = new Button();
 			dateTimePicker1 = new DateTimePicker();
+			CompanyNameLabel = new Label();
 			SuspendLayout();
 			// 
 			// label1
@@ -51,9 +52,9 @@
 			label1.Font = new Font("Segoe UI", 11.25F, FontStyle.Italic, GraphicsUnit.Point);
 			label1.Location = new Point(29, 19);
 			label1.Name = "label1";
-			label1.Size = new Size(169, 20);
+			label1.Size = new Size(253, 20);
 			label1.TabIndex = 0;
-			label1.Text = "Добавить сотрудника:";
+			label1.Text = "Добавить сотрудника в компанию:";
 			// 
 			// label2
 			// 
@@ -162,6 +163,7 @@
 			button2.TabIndex = 14;
 			button2.Text = "Отменить";
 			button2.UseVisualStyleBackColor = true;
+			button2.Click += button2_Click;
 			// 
 			// dateTimePicker1
 			// 
@@ -170,11 +172,22 @@
 			dateTimePicker1.Size = new Size(200, 23);
 			dateTimePicker1.TabIndex = 15;
 			// 
+			// CompanyNameLabel
+			// 
+			CompanyNameLabel.AutoSize = true;
+			CompanyNameLabel.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
+			CompanyNameLabel.Location = new Point(290, 18);
+			CompanyNameLabel.Name = "CompanyNameLabel";
+			CompanyNameLabel.Size = new Size(55, 21);
+			CompanyNameLabel.TabIndex = 16;
+			CompanyNameLabel.Text = "label8";
+			// 
 			// AddEmployeeForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(516, 287);
+			Controls.Add(CompanyNameLabel);
 			Controls.Add(dateTimePicker1);
 			Controls.Add(button2);
 			Controls.Add(button1);
@@ -214,5 +227,6 @@
 		public TextBox textBox5;
 		public TextBox textBox6;
 		public DateTimePicker dateTimePicker1;
+		private Label CompanyNameLabel;
 	}
 }
