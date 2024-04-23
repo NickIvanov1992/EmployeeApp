@@ -31,7 +31,6 @@
 			label1 = new Label();
 			PassportNumberTextBox = new TextBox();
 			PassportSeriesTextBox = new TextBox();
-			DateOfBirthTextBox = new TextBox();
 			MiddlenameTextBox = new TextBox();
 			NameTextBox = new TextBox();
 			SurnameTextBox = new TextBox();
@@ -43,6 +42,7 @@
 			label2 = new Label();
 			CancelButton = new Button();
 			SaveButton = new Button();
+			dateTimePicker1 = new DateTimePicker();
 			SuspendLayout();
 			// 
 			// label1
@@ -68,13 +68,6 @@
 			PassportSeriesTextBox.Name = "PassportSeriesTextBox";
 			PassportSeriesTextBox.Size = new Size(100, 23);
 			PassportSeriesTextBox.TabIndex = 17;
-			// 
-			// DateOfBirthTextBox
-			// 
-			DateOfBirthTextBox.Location = new Point(118, 156);
-			DateOfBirthTextBox.Name = "DateOfBirthTextBox";
-			DateOfBirthTextBox.Size = new Size(100, 23);
-			DateOfBirthTextBox.TabIndex = 16;
 			// 
 			// MiddlenameTextBox
 			// 
@@ -159,6 +152,7 @@
 			CancelButton.TabIndex = 26;
 			CancelButton.Text = "Отменить";
 			CancelButton.UseVisualStyleBackColor = true;
+			CancelButton.Click += CancelButton_Click;
 			// 
 			// SaveButton
 			// 
@@ -168,12 +162,21 @@
 			SaveButton.TabIndex = 25;
 			SaveButton.Text = "Сохранить";
 			SaveButton.UseVisualStyleBackColor = true;
+			SaveButton.Click += SaveButton_Click;
+			// 
+			// dateTimePicker1
+			// 
+			dateTimePicker1.Location = new Point(118, 159);
+			dateTimePicker1.Name = "dateTimePicker1";
+			dateTimePicker1.Size = new Size(200, 23);
+			dateTimePicker1.TabIndex = 27;
 			// 
 			// EditEmployeeForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(485, 311);
+			Controls.Add(dateTimePicker1);
 			Controls.Add(CancelButton);
 			Controls.Add(SaveButton);
 			Controls.Add(label7);
@@ -184,7 +187,6 @@
 			Controls.Add(label2);
 			Controls.Add(PassportNumberTextBox);
 			Controls.Add(PassportSeriesTextBox);
-			Controls.Add(DateOfBirthTextBox);
 			Controls.Add(MiddlenameTextBox);
 			Controls.Add(NameTextBox);
 			Controls.Add(SurnameTextBox);
@@ -198,12 +200,6 @@
 		#endregion
 
 		private Label label1;
-		private TextBox PassportNumberTextBox;
-		private TextBox PassportSeriesTextBox;
-		private TextBox DateOfBirthTextBox;
-		private TextBox MiddlenameTextBox;
-		private TextBox NameTextBox;
-		private TextBox SurnameTextBox;
 		private Label label7;
 		private Label label6;
 		private Label label5;
@@ -212,5 +208,11 @@
 		private Label label2;
 		private Button CancelButton;
 		private Button SaveButton;
+		public TextBox PassportNumberTextBox;
+		public TextBox PassportSeriesTextBox;
+		public TextBox MiddlenameTextBox;
+		public TextBox NameTextBox;
+		public TextBox SurnameTextBox;
+		public DateTimePicker dateTimePicker1;
 	}
 }

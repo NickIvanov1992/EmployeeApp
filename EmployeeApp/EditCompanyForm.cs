@@ -13,6 +13,8 @@ using EmployeeApp.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.Extensions.Logging;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EmployeeApp
@@ -93,7 +95,11 @@ namespace EmployeeApp
 
 			using (SqlConnection connection = new SqlConnection(Program.connectionString))
 			{
-				connection.OpenAsync();
+				SqlCommand countEmployees = new SqlCommand($"SELECT COUNT(*) FROM dbo.EmployeesCompanies WHERE EmployeeId = '{id}'", connection);
+				await connection.OpenAsync();
+
+				int numRows = (int)countEmployees.ExecuteScalar();
+
 				SqlTransaction transaction = connection.BeginTransaction();
 				SqlCommand sqlCommand = connection.CreateCommand();
 				sqlCommand.Transaction = transaction;
@@ -101,9 +107,16 @@ namespace EmployeeApp
 				try
 				{
 					sqlCommand.CommandText = String.Format("DELETE FROM dbo.EmployeesCompanies " +
-						"WHERE EmployeeId = '{0}'", id);
+					"WHERE EmployeeId = '{0}'", id);
 					await sqlCommand.ExecuteNonQueryAsync();
-					///////
+
+					if (numRows <= 1)
+					{
+						sqlCommand.CommandText = String.Format("DELETE FROM dbo.Employees " +
+						"WHERE Id = {0}", id);
+						await sqlCommand.ExecuteNonQueryAsync();
+					}
+
 					await transaction.CommitAsync();
 					MessageBox.Show("Сотрудник удален");
 				}
@@ -113,8 +126,42 @@ namespace EmployeeApp
 					await transaction.RollbackAsync();
 				}
 			}
+			RestartForm();
+		}
+		private void RestartForm()
+		{
+			Hide();
+			EditCompanyForm form = new(companyId);
+			form.Show();
+		}
 
-			Refresh();
+		private void EditButton_Click(object sender, EventArgs e)
+		{
+			if (EmployeeDataGreed.SelectedRows.Count < 1)
+				return;
+			int index = EmployeeDataGreed.SelectedRows[0].Index;
+			int id = 0;
+			bool converted = Int32.TryParse(EmployeeDataGreed[0, index].Value.ToString(), out id);
+
+			if (!converted)
+				return;
+
+			Employee employee = appContext.Employees.Find(id);
+
+			EditEmployeeForm editEmployeeForm = new EditEmployeeForm(employee, companyId);
+			editEmployeeForm.Show();
+			Hide();
+		}
+
+		private void SearchButton_Click(object sender, EventArgs e)
+		{
+			int searchEmployee = Convert.ToInt32(SearchFieldTextBox.Text);
+			Employee employee = appContext.Employees.FirstOrDefault(c => c.PassportNumber == searchEmployee);
+
+			table.Clear();
+			table.Rows.Add(employee.Id, employee.Surname, employee.Name, employee.Middlename,
+				employee.DateOfBirth, employee.PassportSeries, employee.PassportNumber);
+			EmployeeDataGreed.DataSource = table;
 		}
 	}
 }

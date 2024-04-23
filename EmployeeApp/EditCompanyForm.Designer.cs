@@ -71,6 +71,7 @@
 			SearchButton.TabIndex = 2;
 			SearchButton.Text = "Найти";
 			SearchButton.UseVisualStyleBackColor = true;
+			SearchButton.Click += SearchButton_Click;
 			// 
 			// SearchFieldTextBox
 			// 
@@ -97,6 +98,7 @@
 			EditButton.TabIndex = 5;
 			EditButton.Text = "Редактировать";
 			EditButton.UseVisualStyleBackColor = true;
+			EditButton.Click += EditButton_Click;
 			// 
 			// DeleteButton
 			// 

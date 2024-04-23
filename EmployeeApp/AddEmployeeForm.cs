@@ -59,10 +59,14 @@ namespace EmployeeApp
 
 					sqlCommand.CommandText = String.Format("INSERT INTO dbo.EmployeesCompanies(CompanyId, EmployeeId)" +
 						"VALUES ('{0}', '{1}')", companyId, employee.Id);
+
 					await sqlCommand.ExecuteNonQueryAsync();
-					///////
+
 					await transaction.CommitAsync();
+
 					MessageBox.Show("Сотрудник добавлен");
+
+					ShowEditCompanyForm();
 				}
 				catch (Exception ex)
 				{
@@ -74,6 +78,10 @@ namespace EmployeeApp
 		}
 
 		private void button2_Click(object sender, EventArgs e)
+		{
+			ShowEditCompanyForm();
+		}
+		private void ShowEditCompanyForm()
 		{
 			EditCompanyForm editCompanyForm = new(companyId);
 			editCompanyForm.Show();
