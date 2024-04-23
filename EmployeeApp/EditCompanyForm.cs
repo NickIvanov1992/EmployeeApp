@@ -4,17 +4,52 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EmployeeApp.EF;
+using EmployeeApp.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.Extensions.Logging;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EmployeeApp
 {
 	public partial class EditCompanyForm : Form
 	{
-		public EditCompanyForm()
+		EF.AppContext appContext;
+		List<Employee> employees = new List<Employee>();
+		DataTable table = new();
+		private readonly int companyId;
+		public EditCompanyForm(int id)
 		{
 			InitializeComponent();
+			appContext = new EF.AppContext();
+			SqlParameter sqlParameter = new SqlParameter("@id", id);
+			employees = appContext.Employees.FromSqlRaw($"SELECT * FROM Employees " +
+				"JOIN dbo.EmployeesCompanies ON " +
+				"Employees.ID=dbo.EmployeesCompanies.EmployeeId WHERE CompanyId= @id", sqlParameter).ToList();
+
+			table.Columns.Add("Id", typeof(int));
+			table.Columns.Add("Фамилия", typeof(string));
+			table.Columns.Add("Имя", typeof(string));
+			table.Columns.Add("Отчество", typeof(string));
+			table.Columns.Add("Дата рождения", typeof(DateTime));
+			table.Columns.Add("Паспорт серия", typeof(int));
+			table.Columns.Add("Паспорт номер", typeof(int));
+
+			EmployeeDataGreed.AllowUserToAddRows = false;
+			EmployeeDataGreed.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+			EmployeeDataGreed.MultiSelect = false;
+			EmployeeDataGreed.RowHeadersVisible = false;
+
+			companyId = id;
+			string companyName = appContext.Companies.Find(id).Name;
+			CompanyNameLabel.Text = companyName;
 		}
 
 		private void ReturnButton_Click(object sender, EventArgs e)
@@ -22,6 +57,111 @@ namespace EmployeeApp
 			SelectCompanyForm selectCompanyForm = new();
 			selectCompanyForm.Show();
 			Hide();
+		}
+
+		private void AddButton_Click(object sender, EventArgs e)
+		{
+			AddEmployeeForm employeeForm = new AddEmployeeForm(companyId);
+			employeeForm.Show();
+			Hide();
+
+		}
+
+		private void label3_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void EditCompanyForm_Load(object sender, EventArgs e)
+		{
+			foreach (var item in employees)
+			{
+				table.Rows.Add(item.Id, item.Surname, item.Name, item.Middlename,
+					item.DateOfBirth, item.PassportSeries, item.PassportNumber);
+			}
+			EmployeeDataGreed.DataSource = table;
+		}
+
+		private async void DeleteButton_Click(object sender, EventArgs e)
+		{
+			if (EmployeeDataGreed.SelectedRows.Count < 1)
+				return;
+
+			int index = EmployeeDataGreed.SelectedRows[0].Index;
+			int id = 0;
+			bool converted = Int32.TryParse(EmployeeDataGreed[0, index].Value.ToString(), out id);
+			if (converted == false)
+				return;
+
+			using (SqlConnection connection = new SqlConnection(Program.connectionString))
+			{
+				SqlCommand countEmployees = new SqlCommand($"SELECT COUNT(*) FROM dbo.EmployeesCompanies WHERE EmployeeId = '{id}'", connection);
+				await connection.OpenAsync();
+
+				int numRows = (int)countEmployees.ExecuteScalar();
+
+				SqlTransaction transaction = connection.BeginTransaction();
+				SqlCommand sqlCommand = connection.CreateCommand();
+				sqlCommand.Transaction = transaction;
+
+				try
+				{
+					sqlCommand.CommandText = String.Format("DELETE FROM dbo.EmployeesCompanies " +
+					"WHERE EmployeeId = '{0}'", id);
+					await sqlCommand.ExecuteNonQueryAsync();
+
+					if (numRows <= 1)
+					{
+						sqlCommand.CommandText = String.Format("DELETE FROM dbo.Employees " +
+						"WHERE Id = {0}", id);
+						await sqlCommand.ExecuteNonQueryAsync();
+					}
+
+					await transaction.CommitAsync();
+					MessageBox.Show("Сотрудник удален");
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message);
+					await transaction.RollbackAsync();
+				}
+			}
+			RestartForm();
+		}
+		private void RestartForm()
+		{
+			Hide();
+			EditCompanyForm form = new(companyId);
+			form.Show();
+		}
+
+		private void EditButton_Click(object sender, EventArgs e)
+		{
+			if (EmployeeDataGreed.SelectedRows.Count < 1)
+				return;
+			int index = EmployeeDataGreed.SelectedRows[0].Index;
+			int id = 0;
+			bool converted = Int32.TryParse(EmployeeDataGreed[0, index].Value.ToString(), out id);
+
+			if (!converted)
+				return;
+
+			Employee employee = appContext.Employees.Find(id);
+
+			EditEmployeeForm editEmployeeForm = new EditEmployeeForm(employee, companyId);
+			editEmployeeForm.Show();
+			Hide();
+		}
+
+		private void SearchButton_Click(object sender, EventArgs e)
+		{
+			int searchEmployee = Convert.ToInt32(SearchFieldTextBox.Text);
+			Employee employee = appContext.Employees.FirstOrDefault(c => c.PassportNumber == searchEmployee);
+
+			table.Clear();
+			table.Rows.Add(employee.Id, employee.Surname, employee.Name, employee.Middlename,
+				employee.DateOfBirth, employee.PassportSeries, employee.PassportNumber);
+			EmployeeDataGreed.DataSource = table;
 		}
 	}
 }

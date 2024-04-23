@@ -1,15 +1,17 @@
 namespace EmployeeApp
 {
-	internal static class Program
+	public static class Program
 	{
+		public static string connectionString = "Data Source=DESKTOP-VOPPTIR;Initial Catalog=TestCompanies;User ID=userNick;Password=sa;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+
 		/// <summary>
 		///  The main entry point for the application.
 		/// </summary>
 		[STAThread]
 		static void Main()
 		{
-			// To customize application configuration such as set high DPI settings or default font,
-			// see https://aka.ms/applicationconfiguration.
+
+
 			ApplicationConfiguration.Initialize();
 			Application.Run(new StartForm());
 		}

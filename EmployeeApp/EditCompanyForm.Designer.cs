@@ -38,6 +38,9 @@
 			UploadCsvButton = new Button();
 			SaveToCsvButton = new Button();
 			ReturnButton = new Button();
+			EmployeeDataGreed = new DataGridView();
+			CompanyNameLabel = new Label();
+			((System.ComponentModel.ISupportInitialize)EmployeeDataGreed).BeginInit();
 			SuspendLayout();
 			// 
 			// label1
@@ -68,6 +71,7 @@
 			SearchButton.TabIndex = 2;
 			SearchButton.Text = "Найти";
 			SearchButton.UseVisualStyleBackColor = true;
+			SearchButton.Click += SearchButton_Click;
 			// 
 			// SearchFieldTextBox
 			// 
@@ -84,6 +88,7 @@
 			AddButton.TabIndex = 4;
 			AddButton.Text = "Добавить";
 			AddButton.UseVisualStyleBackColor = true;
+			AddButton.Click += AddButton_Click;
 			// 
 			// EditButton
 			// 
@@ -93,6 +98,7 @@
 			EditButton.TabIndex = 5;
 			EditButton.Text = "Редактировать";
 			EditButton.UseVisualStyleBackColor = true;
+			EditButton.Click += EditButton_Click;
 			// 
 			// DeleteButton
 			// 
@@ -102,6 +108,7 @@
 			DeleteButton.TabIndex = 6;
 			DeleteButton.Text = "Удалить";
 			DeleteButton.UseVisualStyleBackColor = true;
+			DeleteButton.Click += DeleteButton_Click;
 			// 
 			// UploadCsvButton
 			// 
@@ -131,11 +138,33 @@
 			ReturnButton.UseVisualStyleBackColor = true;
 			ReturnButton.Click += ReturnButton_Click;
 			// 
+			// EmployeeDataGreed
+			// 
+			EmployeeDataGreed.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			EmployeeDataGreed.Location = new Point(29, 122);
+			EmployeeDataGreed.Name = "EmployeeDataGreed";
+			EmployeeDataGreed.RowTemplate.Height = 25;
+			EmployeeDataGreed.Size = new Size(545, 150);
+			EmployeeDataGreed.TabIndex = 10;
+			// 
+			// CompanyNameLabel
+			// 
+			CompanyNameLabel.AutoSize = true;
+			CompanyNameLabel.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
+			CompanyNameLabel.Location = new Point(135, 6);
+			CompanyNameLabel.Name = "CompanyNameLabel";
+			CompanyNameLabel.Size = new Size(65, 25);
+			CompanyNameLabel.TabIndex = 11;
+			CompanyNameLabel.Text = "label3";
+			CompanyNameLabel.Click += label3_Click;
+			// 
 			// EditCompanyForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(610, 388);
+			Controls.Add(CompanyNameLabel);
+			Controls.Add(EmployeeDataGreed);
 			Controls.Add(ReturnButton);
 			Controls.Add(SaveToCsvButton);
 			Controls.Add(UploadCsvButton);
@@ -148,6 +177,8 @@
 			Controls.Add(label1);
 			Name = "EditCompanyForm";
 			Text = "EditCompanyForm";
+			Load += EditCompanyForm_Load;
+			((System.ComponentModel.ISupportInitialize)EmployeeDataGreed).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -164,5 +195,7 @@
 		private Button UploadCsvButton;
 		private Button SaveToCsvButton;
 		private Button ReturnButton;
+		private DataGridView EmployeeDataGreed;
+		private Label CompanyNameLabel;
 	}
 }

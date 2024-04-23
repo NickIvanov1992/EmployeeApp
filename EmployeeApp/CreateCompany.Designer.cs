@@ -31,11 +31,11 @@
 			label1 = new Label();
 			NameCompanyTextBox = new TextBox();
 			label2 = new Label();
-			textBox1 = new TextBox();
+			INNTextBox = new TextBox();
 			label3 = new Label();
 			label4 = new Label();
-			textBox2 = new TextBox();
-			textBox3 = new TextBox();
+			UAdressTextBox = new TextBox();
+			FactAdressTextBox = new TextBox();
 			CreateButton = new Button();
 			CancelButton = new Button();
 			label5 = new Label();
@@ -66,12 +66,12 @@
 			label2.TabIndex = 2;
 			label2.Text = "ИНН :";
 			// 
-			// textBox1
+			// INNTextBox
 			// 
-			textBox1.Location = new Point(168, 90);
-			textBox1.Name = "textBox1";
-			textBox1.Size = new Size(133, 23);
-			textBox1.TabIndex = 3;
+			INNTextBox.Location = new Point(168, 90);
+			INNTextBox.Name = "INNTextBox";
+			INNTextBox.Size = new Size(133, 23);
+			INNTextBox.TabIndex = 3;
 			// 
 			// label3
 			// 
@@ -91,19 +91,19 @@
 			label4.TabIndex = 5;
 			label4.Text = "Фактический адрес :";
 			// 
-			// textBox2
+			// UAdressTextBox
 			// 
-			textBox2.Location = new Point(168, 129);
-			textBox2.Name = "textBox2";
-			textBox2.Size = new Size(256, 23);
-			textBox2.TabIndex = 6;
+			UAdressTextBox.Location = new Point(168, 129);
+			UAdressTextBox.Name = "UAdressTextBox";
+			UAdressTextBox.Size = new Size(256, 23);
+			UAdressTextBox.TabIndex = 6;
 			// 
-			// textBox3
+			// FactAdressTextBox
 			// 
-			textBox3.Location = new Point(168, 168);
-			textBox3.Name = "textBox3";
-			textBox3.Size = new Size(256, 23);
-			textBox3.TabIndex = 7;
+			FactAdressTextBox.Location = new Point(168, 168);
+			FactAdressTextBox.Name = "FactAdressTextBox";
+			FactAdressTextBox.Size = new Size(256, 23);
+			FactAdressTextBox.TabIndex = 7;
 			// 
 			// CreateButton
 			// 
@@ -113,6 +113,7 @@
 			CreateButton.TabIndex = 8;
 			CreateButton.Text = "Создать";
 			CreateButton.UseVisualStyleBackColor = true;
+			CreateButton.Click += CreateButton_Click;
 			// 
 			// CancelButton
 			// 
@@ -142,11 +143,11 @@
 			Controls.Add(label5);
 			Controls.Add(CancelButton);
 			Controls.Add(CreateButton);
-			Controls.Add(textBox3);
-			Controls.Add(textBox2);
+			Controls.Add(FactAdressTextBox);
+			Controls.Add(UAdressTextBox);
 			Controls.Add(label4);
 			Controls.Add(label3);
-			Controls.Add(textBox1);
+			Controls.Add(INNTextBox);
 			Controls.Add(label2);
 			Controls.Add(NameCompanyTextBox);
 			Controls.Add(label1);
@@ -162,11 +163,11 @@
 		private Label label1;
 		private TextBox NameCompanyTextBox;
 		private Label label2;
-		private TextBox textBox1;
+		private TextBox INNTextBox;
 		private Label label3;
 		private Label label4;
-		private TextBox textBox2;
-		private TextBox textBox3;
+		private TextBox UAdressTextBox;
+		private TextBox FactAdressTextBox;
 		private Button CreateButton;
 		private Button CancelButton;
 		private Label label5;
