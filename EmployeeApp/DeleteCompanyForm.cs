@@ -32,9 +32,18 @@ namespace EmployeeApp
 
 		private void CancelButton_Click(object sender, EventArgs e)
 		{
+			ShowStartForm();
+		}
+		private void ShowStartForm()
+		{
 			StartForm startForm = new();
 			startForm.Show();
 			Hide();
+		}
+
+		private void DeleteCompanyForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			ShowStartForm();
 		}
 	}
 }

@@ -205,6 +205,7 @@
 			Controls.Add(label1);
 			Name = "AddEmployeeForm";
 			Text = "AddEmployeeForm";
+			FormClosing += AddEmployeeForm_FormClosing;
 			Load += AddEmployeeForm_Load;
 			ResumeLayout(false);
 			PerformLayout();

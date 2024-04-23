@@ -1,5 +1,6 @@
 ﻿using EmployeeApp.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,10 +42,19 @@ namespace EmployeeApp
 		private void SearchButton_Click(object sender, EventArgs e)
 		{
 			string searchCompany = SearchCompanyTextBox.Text;
-			Company company = appContext.Companies.FirstOrDefault(c => c.INN == searchCompany);
+			Company[] companies = appContext.Companies.Where(c => c.Name.ToLower().Contains(searchCompany.ToLower())
+								|| c.INN.Contains(searchCompany)).ToArray();
 
 			table.Clear();
-			table.Rows.Add(company.Id, company.Name, company.INN);
+
+			if (companies.Count() > 0)
+			{
+				foreach (var company in companies)
+					table.Rows.Add(company.Id, company.Name, company.INN);
+			}
+			else
+				MessageBox.Show("Ничего не найдено");
+
 			CompaniesDataGridView.DataSource = table;
 		}
 
@@ -78,6 +88,11 @@ namespace EmployeeApp
 			EditCompanyForm editcompanyform = new EditCompanyForm(id);
 			editcompanyform.Show();
 			Hide();
+		}
+
+		private void SelectCompanyForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			Application.Exit();
 		}
 	}
 }

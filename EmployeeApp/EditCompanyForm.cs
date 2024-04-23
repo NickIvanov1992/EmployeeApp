@@ -25,6 +25,7 @@ namespace EmployeeApp
 		List<Employee> employees = new List<Employee>();
 		DataTable table = new();
 		private readonly int companyId;
+		private readonly string companyName;
 		public EditCompanyForm(int id)
 		{
 			InitializeComponent();
@@ -48,7 +49,7 @@ namespace EmployeeApp
 			EmployeeDataGreed.RowHeadersVisible = false;
 
 			companyId = id;
-			string companyName = appContext.Companies.Find(id).Name;
+		    this.companyName = appContext.Companies.Find(id).Name;
 			CompanyNameLabel.Text = companyName;
 		}
 
@@ -155,13 +156,30 @@ namespace EmployeeApp
 
 		private void SearchButton_Click(object sender, EventArgs e)
 		{
-			int searchEmployee = Convert.ToInt32(SearchFieldTextBox.Text);
-			Employee employee = appContext.Employees.FirstOrDefault(c => c.PassportNumber == searchEmployee);
+			string searchEmployee = SearchFieldTextBox.Text;
+
+			Employee[] employees = appContext.Employees.Where(c => c.PassportNumber.ToString() == searchEmployee 
+								|| c.Surname.Contains(searchEmployee.ToLower())).ToArray();
 
 			table.Clear();
-			table.Rows.Add(employee.Id, employee.Surname, employee.Name, employee.Middlename,
-				employee.DateOfBirth, employee.PassportSeries, employee.PassportNumber);
+
+			if (employees.Count() > 0)
+			{
+				foreach (var employee in employees)
+				{
+					table.Rows.Add(employee.Id, employee.Surname, employee.Name, employee.Middlename,
+					employee.DateOfBirth, employee.PassportSeries, employee.PassportNumber);
+				}
+			}
+			else
+				MessageBox.Show($"В компании {companyName} Никого не найдено");
+			
 			EmployeeDataGreed.DataSource = table;
+		}
+
+		private void EditCompanyForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			Application.Exit();
 		}
 	}
 }

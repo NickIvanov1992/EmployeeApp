@@ -93,6 +93,7 @@
 			Controls.Add(label1);
 			Name = "DeleteCompanyForm";
 			Text = "DeleteCompanyForm";
+			FormClosing += DeleteCompanyForm_FormClosing;
 			ResumeLayout(false);
 			PerformLayout();
 		}

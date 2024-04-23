@@ -39,6 +39,7 @@
 			CreateButton = new Button();
 			CancelButton = new Button();
 			label5 = new Label();
+			WarningInnLabel = new Label();
 			SuspendLayout();
 			// 
 			// label1
@@ -69,9 +70,11 @@
 			// INNTextBox
 			// 
 			INNTextBox.Location = new Point(168, 90);
+			INNTextBox.MaxLength = 12;
 			INNTextBox.Name = "INNTextBox";
 			INNTextBox.Size = new Size(133, 23);
 			INNTextBox.TabIndex = 3;
+			INNTextBox.KeyPress += INNTextBox_KeyPress;
 			// 
 			// label3
 			// 
@@ -135,11 +138,21 @@
 			label5.TabIndex = 10;
 			label5.Text = "Информация о компании";
 			// 
+			// WarningInnLabel
+			// 
+			WarningInnLabel.AutoSize = true;
+			WarningInnLabel.ForeColor = Color.Coral;
+			WarningInnLabel.Location = new Point(312, 92);
+			WarningInnLabel.Name = "WarningInnLabel";
+			WarningInnLabel.Size = new Size(0, 15);
+			WarningInnLabel.TabIndex = 11;
+			// 
 			// CreateCompany
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(551, 265);
+			Controls.Add(WarningInnLabel);
 			Controls.Add(label5);
 			Controls.Add(CancelButton);
 			Controls.Add(CreateButton);
@@ -154,6 +167,7 @@
 			Name = "CreateCompany";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "CreateCompany";
+			FormClosing += CreateCompany_FormClosing;
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -171,5 +185,6 @@
 		private Button CreateButton;
 		private Button CancelButton;
 		private Label label5;
+		private Label WarningInnLabel;
 	}
 }

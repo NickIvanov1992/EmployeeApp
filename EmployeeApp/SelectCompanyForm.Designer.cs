@@ -54,6 +54,7 @@
 			SearchCompanyTextBox.Name = "SearchCompanyTextBox";
 			SearchCompanyTextBox.Size = new Size(194, 23);
 			SearchCompanyTextBox.TabIndex = 1;
+			SearchCompanyTextBox.Text = "ИНН или название";
 			// 
 			// SearchButton
 			// 
@@ -120,6 +121,7 @@
 			Controls.Add(label1);
 			Name = "SelectCompanyForm";
 			Text = "SelectCompanyForm";
+			FormClosing += SelectCompanyForm_FormClosing;
 			Load += SelectCompanyForm_Load;
 			((System.ComponentModel.ISupportInitialize)CompaniesDataGridView).EndInit();
 			ResumeLayout(false);

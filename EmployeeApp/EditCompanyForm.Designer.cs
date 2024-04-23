@@ -177,6 +177,7 @@
 			Controls.Add(label1);
 			Name = "EditCompanyForm";
 			Text = "EditCompanyForm";
+			FormClosing += EditCompanyForm_FormClosing;
 			Load += EditCompanyForm_Load;
 			((System.ComponentModel.ISupportInitialize)EmployeeDataGreed).EndInit();
 			ResumeLayout(false);

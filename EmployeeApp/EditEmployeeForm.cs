@@ -60,5 +60,10 @@ namespace EmployeeApp
 			editCompanyForm.Show();
 			Hide();
 		}
+
+		private void EditEmployeeForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			ShowEditCompanyForm();
+		}
 	}
 }

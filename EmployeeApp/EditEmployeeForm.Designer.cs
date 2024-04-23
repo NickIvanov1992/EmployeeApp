@@ -193,6 +193,7 @@
 			Controls.Add(label1);
 			Name = "EditEmployeeForm";
 			Text = "EditEmployeeForm";
+			FormClosing += EditEmployeeForm_FormClosing;
 			ResumeLayout(false);
 			PerformLayout();
 		}
