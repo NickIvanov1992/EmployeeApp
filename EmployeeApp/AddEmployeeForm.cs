@@ -37,6 +37,20 @@ namespace EmployeeApp
 
 		private async void button1_Click(object sender, EventArgs e)
 		{
+			if (string.IsNullOrWhiteSpace(textBox1.Text) ||
+			   string.IsNullOrWhiteSpace(textBox2.Text) ||
+			   string.IsNullOrWhiteSpace(textBox3.Text) ||
+			   string.IsNullOrWhiteSpace(dateTimePicker1.Value.ToString()))
+			{
+				MessageBox.Show("Не все поля заполнены");
+				return;
+			}
+
+			if (textBox5.TextLength != 4 && textBox6.TextLength != 6)
+			{
+				WarningLabel.Text = "Не полностью заполнены поля \n Серия или номер паспорта";
+				return;
+			}
 			using (SqlConnection connection = new SqlConnection(Program.connectionString))
 			{
 				connection.Open();
@@ -64,6 +78,8 @@ namespace EmployeeApp
 
 					await transaction.CommitAsync();
 
+					
+
 					MessageBox.Show("Сотрудник добавлен");
 
 					ShowEditCompanyForm();
@@ -90,7 +106,15 @@ namespace EmployeeApp
 
 		private void AddEmployeeForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			appContext.SaveChangesAsync();
 			ShowEditCompanyForm();
+		}
+
+		private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			char number = e.KeyChar;
+			if (!Char.IsDigit(number) && e.KeyChar != (char)8)
+				e.Handled = true;
 		}
 	}
 }

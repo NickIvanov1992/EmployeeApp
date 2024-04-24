@@ -43,6 +43,7 @@
 			CancelButton = new Button();
 			SaveButton = new Button();
 			dateTimePicker1 = new DateTimePicker();
+			WarningPassportNumberCheck = new Label();
 			SuspendLayout();
 			// 
 			// label1
@@ -58,6 +59,7 @@
 			// PassportNumberTextBox
 			// 
 			PassportNumberTextBox.Location = new Point(118, 214);
+			PassportNumberTextBox.MaxLength = 6;
 			PassportNumberTextBox.Name = "PassportNumberTextBox";
 			PassportNumberTextBox.Size = new Size(100, 23);
 			PassportNumberTextBox.TabIndex = 18;
@@ -65,6 +67,7 @@
 			// PassportSeriesTextBox
 			// 
 			PassportSeriesTextBox.Location = new Point(118, 185);
+			PassportSeriesTextBox.MaxLength = 4;
 			PassportSeriesTextBox.Name = "PassportSeriesTextBox";
 			PassportSeriesTextBox.Size = new Size(100, 23);
 			PassportSeriesTextBox.TabIndex = 17;
@@ -171,11 +174,21 @@
 			dateTimePicker1.Size = new Size(200, 23);
 			dateTimePicker1.TabIndex = 27;
 			// 
+			// WarningPassportNumberCheck
+			// 
+			WarningPassportNumberCheck.AutoSize = true;
+			WarningPassportNumberCheck.ForeColor = Color.Coral;
+			WarningPassportNumberCheck.Location = new Point(235, 201);
+			WarningPassportNumberCheck.Name = "WarningPassportNumberCheck";
+			WarningPassportNumberCheck.Size = new Size(0, 15);
+			WarningPassportNumberCheck.TabIndex = 28;
+			// 
 			// EditEmployeeForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(485, 311);
+			Controls.Add(WarningPassportNumberCheck);
 			Controls.Add(dateTimePicker1);
 			Controls.Add(CancelButton);
 			Controls.Add(SaveButton);
@@ -215,5 +228,6 @@
 		public TextBox NameTextBox;
 		public TextBox SurnameTextBox;
 		public DateTimePicker dateTimePicker1;
+		private Label WarningPassportNumberCheck;
 	}
 }

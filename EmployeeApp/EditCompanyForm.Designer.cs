@@ -77,6 +77,7 @@
 			// 
 			SearchFieldTextBox.Location = new Point(167, 88);
 			SearchFieldTextBox.Name = "SearchFieldTextBox";
+			SearchFieldTextBox.PlaceholderText = "Фамилия или номер паспорта";
 			SearchFieldTextBox.Size = new Size(407, 23);
 			SearchFieldTextBox.TabIndex = 3;
 			// 

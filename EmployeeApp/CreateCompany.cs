@@ -72,7 +72,7 @@ namespace EmployeeApp
 		private void INNTextBox_KeyPress(object sender, KeyPressEventArgs e)
 		{
 			char number = e.KeyChar;
-			if (!Char.IsDigit(number))
+			if (!Char.IsDigit(number) && e.KeyChar != (char)8)
 				e.Handled = true;
 		}
 	}

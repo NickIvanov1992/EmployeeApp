@@ -29,10 +29,12 @@
 		private void InitializeComponent()
 		{
 			label1 = new Label();
-			label2 = new Label();
 			DeleteTextBox = new TextBox();
 			DeleteButton = new Button();
 			CancelButton = new Button();
+			SearchCompanyDataGrid = new DataGridView();
+			SearchButton = new Button();
+			((System.ComponentModel.ISupportInitialize)SearchCompanyDataGrid).BeginInit();
 			SuspendLayout();
 			// 
 			// label1
@@ -45,25 +47,19 @@
 			label1.TabIndex = 0;
 			label1.Text = "Удаление компании";
 			// 
-			// label2
-			// 
-			label2.AutoSize = true;
-			label2.Location = new Point(21, 55);
-			label2.Name = "label2";
-			label2.Size = new Size(145, 30);
-			label2.TabIndex = 1;
-			label2.Text = "Введите ИНН компании, \r\nкоторую хотите удалить";
-			// 
 			// DeleteTextBox
 			// 
 			DeleteTextBox.Location = new Point(177, 57);
+			DeleteTextBox.MaxLength = 12;
 			DeleteTextBox.Name = "DeleteTextBox";
+			DeleteTextBox.PlaceholderText = "ИНН или название";
 			DeleteTextBox.Size = new Size(178, 23);
 			DeleteTextBox.TabIndex = 2;
+			DeleteTextBox.TextChanged += DeleteTextBox_TextChanged;
 			// 
 			// DeleteButton
 			// 
-			DeleteButton.Location = new Point(82, 135);
+			DeleteButton.Location = new Point(82, 145);
 			DeleteButton.Name = "DeleteButton";
 			DeleteButton.Size = new Size(101, 23);
 			DeleteButton.TabIndex = 3;
@@ -73,7 +69,7 @@
 			// 
 			// CancelButton
 			// 
-			CancelButton.Location = new Point(236, 135);
+			CancelButton.Location = new Point(237, 145);
 			CancelButton.Name = "CancelButton";
 			CancelButton.Size = new Size(91, 23);
 			CancelButton.TabIndex = 4;
@@ -81,19 +77,40 @@
 			CancelButton.UseVisualStyleBackColor = true;
 			CancelButton.Click += CancelButton_Click;
 			// 
+			// SearchCompanyDataGrid
+			// 
+			SearchCompanyDataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			SearchCompanyDataGrid.Location = new Point(24, 88);
+			SearchCompanyDataGrid.Name = "SearchCompanyDataGrid";
+			SearchCompanyDataGrid.RowTemplate.Height = 25;
+			SearchCompanyDataGrid.Size = new Size(335, 51);
+			SearchCompanyDataGrid.TabIndex = 5;
+			// 
+			// SearchButton
+			// 
+			SearchButton.Location = new Point(27, 56);
+			SearchButton.Name = "SearchButton";
+			SearchButton.Size = new Size(123, 23);
+			SearchButton.TabIndex = 6;
+			SearchButton.Text = "Найти";
+			SearchButton.UseVisualStyleBackColor = true;
+			SearchButton.Click += SearchButton_Click;
+			// 
 			// DeleteCompanyForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(430, 180);
+			Controls.Add(SearchButton);
+			Controls.Add(SearchCompanyDataGrid);
 			Controls.Add(CancelButton);
 			Controls.Add(DeleteButton);
 			Controls.Add(DeleteTextBox);
-			Controls.Add(label2);
 			Controls.Add(label1);
 			Name = "DeleteCompanyForm";
 			Text = "DeleteCompanyForm";
 			FormClosing += DeleteCompanyForm_FormClosing;
+			((System.ComponentModel.ISupportInitialize)SearchCompanyDataGrid).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -101,9 +118,10 @@
 		#endregion
 
 		private Label label1;
-		private Label label2;
 		private TextBox DeleteTextBox;
 		private Button DeleteButton;
 		private Button CancelButton;
+		private DataGridView SearchCompanyDataGrid;
+		private Button SearchButton;
 	}
 }

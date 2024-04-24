@@ -44,6 +44,7 @@
 			button2 = new Button();
 			dateTimePicker1 = new DateTimePicker();
 			CompanyNameLabel = new Label();
+			WarningLabel = new Label();
 			SuspendLayout();
 			// 
 			// label1
@@ -134,16 +135,20 @@
 			// textBox5
 			// 
 			textBox5.Location = new Point(145, 175);
+			textBox5.MaxLength = 4;
 			textBox5.Name = "textBox5";
 			textBox5.Size = new Size(100, 23);
 			textBox5.TabIndex = 11;
+			textBox5.KeyPress += textBox5_KeyPress;
 			// 
 			// textBox6
 			// 
 			textBox6.Location = new Point(145, 204);
+			textBox6.MaxLength = 6;
 			textBox6.Name = "textBox6";
 			textBox6.Size = new Size(100, 23);
 			textBox6.TabIndex = 12;
+			textBox6.KeyPress += textBox5_KeyPress;
 			// 
 			// button1
 			// 
@@ -182,11 +187,21 @@
 			CompanyNameLabel.TabIndex = 16;
 			CompanyNameLabel.Text = "label8";
 			// 
+			// WarningLabel
+			// 
+			WarningLabel.AutoSize = true;
+			WarningLabel.ForeColor = Color.Coral;
+			WarningLabel.Location = new Point(260, 192);
+			WarningLabel.Name = "WarningLabel";
+			WarningLabel.Size = new Size(0, 15);
+			WarningLabel.TabIndex = 17;
+			// 
 			// AddEmployeeForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(516, 287);
+			Controls.Add(WarningLabel);
 			Controls.Add(CompanyNameLabel);
 			Controls.Add(dateTimePicker1);
 			Controls.Add(button2);
@@ -229,5 +244,6 @@
 		public TextBox textBox6;
 		public DateTimePicker dateTimePicker1;
 		private Label CompanyNameLabel;
+		private Label WarningLabel;
 	}
 }

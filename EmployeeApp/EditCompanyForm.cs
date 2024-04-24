@@ -47,17 +47,16 @@ namespace EmployeeApp
 			EmployeeDataGreed.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 			EmployeeDataGreed.MultiSelect = false;
 			EmployeeDataGreed.RowHeadersVisible = false;
+		//	EmployeeDataGreed.Rows[1].ReadOnly = true;
 
 			companyId = id;
-		    this.companyName = appContext.Companies.Find(id).Name;
+			this.companyName = appContext.Companies.Find(id).Name;
 			CompanyNameLabel.Text = companyName;
 		}
 
 		private void ReturnButton_Click(object sender, EventArgs e)
 		{
-			SelectCompanyForm selectCompanyForm = new();
-			selectCompanyForm.Show();
-			Hide();
+			ShowSelectCompanyForm();
 		}
 
 		private void AddButton_Click(object sender, EventArgs e)
@@ -135,6 +134,12 @@ namespace EmployeeApp
 			EditCompanyForm form = new(companyId);
 			form.Show();
 		}
+		private void ShowSelectCompanyForm()
+		{
+			SelectCompanyForm selectCompanyForm = new();
+			selectCompanyForm.Show();
+			Hide();
+		}
 
 		private void EditButton_Click(object sender, EventArgs e)
 		{
@@ -158,28 +163,29 @@ namespace EmployeeApp
 		{
 			string searchEmployee = SearchFieldTextBox.Text;
 
-			Employee[] employees = appContext.Employees.Where(c => c.PassportNumber.ToString() == searchEmployee 
+			Employee[] searchResult = employees.Where(c => c.PassportNumber.ToString() == searchEmployee
 								|| c.Surname.Contains(searchEmployee.ToLower())).ToArray();
 
 			table.Clear();
 
-			if (employees.Count() > 0)
+			if (searchResult.Count() > 0)
 			{
-				foreach (var employee in employees)
+				for(int i = searchResult.Count() -1; i>=0; i--)
 				{
+					var employee = searchResult[i];
 					table.Rows.Add(employee.Id, employee.Surname, employee.Name, employee.Middlename,
 					employee.DateOfBirth, employee.PassportSeries, employee.PassportNumber);
 				}
 			}
 			else
 				MessageBox.Show($"В компании {companyName} Никого не найдено");
-			
+
 			EmployeeDataGreed.DataSource = table;
 		}
 
 		private void EditCompanyForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Application.Exit();
+			ShowSelectCompanyForm();
 		}
 	}
 }

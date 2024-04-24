@@ -1,8 +1,10 @@
 ﻿using EmployeeApp.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.DirectoryServices;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -15,19 +17,41 @@ namespace EmployeeApp
 	public partial class DeleteCompanyForm : Form
 	{
 		EF.AppContext appContext;
+		DataTable table = new();
 		public DeleteCompanyForm()
 		{
-			appContext = new EF.AppContext();
 			InitializeComponent();
+			appContext = new EF.AppContext();
+			table.Columns.Add("Id", typeof(int));
+			table.Columns.Add("Название", typeof(string));
+			table.Columns.Add("ИНН", typeof(string));
+			SearchCompanyDataGrid.AllowUserToAddRows = false;
+			SearchCompanyDataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+			SearchCompanyDataGrid.MultiSelect = false;
+			SearchCompanyDataGrid.RowHeadersVisible = false;
 		}
 
 		private void DeleteButton_Click(object sender, EventArgs e)
 		{
-			string convertedInn = DeleteTextBox.Text;
-			Company company = appContext.Companies.FirstOrDefault(c => c.INN == convertedInn);
-			appContext.Remove(company);
-			appContext.SaveChanges();
-			MessageBox.Show("Компания удалена");
+			if (SearchCompanyDataGrid.SelectedRows.Count < 1)
+				return;
+
+			int index = SearchCompanyDataGrid.SelectedRows[0].Index;
+			int id = 0;
+			bool converted = Int32.TryParse(SearchCompanyDataGrid[0, index].Value.ToString(), out id);
+
+			if (!converted)
+				return;
+
+			Company company = appContext.Companies.Find(id);
+			if (company != null)
+			{
+				appContext.Remove(company);
+				appContext.SaveChanges();
+				MessageBox.Show("Компания удалена");
+			}
+			else
+				MessageBox.Show("Ничего не найдено");
 		}
 
 		private void CancelButton_Click(object sender, EventArgs e)
@@ -45,5 +69,32 @@ namespace EmployeeApp
 		{
 			ShowStartForm();
 		}
+
+		private void DeleteTextBox_KeyPress(object sender, KeyPressEventArgs e)
+		{
+		}
+
+		private void SearchButton_Click(object sender, EventArgs e)
+		{
+			var field = DeleteTextBox.Text;
+			try
+			{
+				Company company = appContext.Companies.SingleOrDefault(c => c.INN == field
+			|| c.Name.ToLower().Contains(field.ToLower()));
+				table.Rows.Add(company.Id, company.Name, company.INN);
+				SearchCompanyDataGrid.DataSource = table;
+			}
+			catch
+			{
+				MessageBox.Show("Ничего не выбрано");
+			}
+			
+		}
+
+		private void DeleteTextBox_TextChanged(object sender, EventArgs e)
+		{
+
+		}
 	}
+
 }

@@ -52,9 +52,9 @@
 			// 
 			SearchCompanyTextBox.Location = new Point(28, 66);
 			SearchCompanyTextBox.Name = "SearchCompanyTextBox";
+			SearchCompanyTextBox.PlaceholderText = "ИНН или название";
 			SearchCompanyTextBox.Size = new Size(194, 23);
 			SearchCompanyTextBox.TabIndex = 1;
-			SearchCompanyTextBox.Text = "ИНН или название";
 			// 
 			// SearchButton
 			// 
