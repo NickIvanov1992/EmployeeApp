@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -47,7 +48,7 @@ namespace EmployeeApp
 			EmployeeDataGreed.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 			EmployeeDataGreed.MultiSelect = false;
 			EmployeeDataGreed.RowHeadersVisible = false;
-		//	EmployeeDataGreed.Rows[1].ReadOnly = true;
+			//	EmployeeDataGreed.Rows[1].ReadOnly = true;
 
 			companyId = id;
 			this.companyName = appContext.Companies.Find(id).Name;
@@ -170,7 +171,7 @@ namespace EmployeeApp
 
 			if (searchResult.Count() > 0)
 			{
-				for(int i = searchResult.Count() -1; i>=0; i--)
+				for (int i = searchResult.Count() - 1; i >= 0; i--)
 				{
 					var employee = searchResult[i];
 					table.Rows.Add(employee.Id, employee.Surname, employee.Name, employee.Middlename,
@@ -186,6 +187,75 @@ namespace EmployeeApp
 		private void EditCompanyForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			ShowSelectCompanyForm();
+		}
+
+		private void SaveToCsvButton_Click(object sender, EventArgs e)
+		{
+			SaveEmployeesToCSVfile("SaveEmployees.csv", EmployeeDataGreed);
+		}
+		private bool SaveEmployeesToCSVfile(string fileName, DataGridView table)
+		{
+			try
+			{
+				using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.Unicode))
+				{
+					List<int> col_n = new List<int>();
+					foreach (DataGridViewColumn col in table.Columns)
+						if (col.Visible)
+						{
+							sw.Write(col.HeaderText + ";");
+							col_n.Add(col.Index);
+						}
+					sw.WriteLine();
+					int x = table.RowCount;
+					if (table.AllowUserToAddRows) 
+						x--;
+
+					for (int i = 0; i < x; i++)
+					{
+						for (int y = 0; y < col_n.Count; y++)
+							sw.Write(table[col_n[y], i].Value + ";");
+						sw.Write(" \r\n");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+				return false;
+			}
+			return true;
+		}
+		private DataTable ReadFromCSVfile(string fileName)
+		{
+			DataTable dt = new DataTable();
+			using (StreamReader sr = new StreamReader(fileName, Encoding.Unicode))
+			{
+				string[] headers = sr.ReadLine().Split(';');
+				foreach (string header in headers)
+				{
+					dt.Columns.Add(header);
+				}
+				while (!sr.EndOfStream)
+				{
+					string[] rows = sr.ReadLine().Split(';');
+					DataRow dr = dt.NewRow();
+					for (int i = 0; i < headers.Length; i++)
+					{
+						dr[i] = rows[i];
+					}
+					dt.Rows.Add(dr);
+				}
+
+			}
+			return dt;
+		}
+
+		private void UploadCsvButton_Click(object sender, EventArgs e)
+		{
+			EmployeeDataGreed.DataSource = ReadFromCSVfile("SaveEmployees.csv");
+			appContext.SaveChanges();
+			MessageBox.Show("Данные загружены");
 		}
 	}
 }

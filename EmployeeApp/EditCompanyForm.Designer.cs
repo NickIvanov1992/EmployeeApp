@@ -119,6 +119,7 @@
 			UploadCsvButton.TabIndex = 7;
 			UploadCsvButton.Text = "Загрузить CSV файл";
 			UploadCsvButton.UseVisualStyleBackColor = true;
+			UploadCsvButton.Click += UploadCsvButton_Click;
 			// 
 			// SaveToCsvButton
 			// 
@@ -128,6 +129,7 @@
 			SaveToCsvButton.TabIndex = 8;
 			SaveToCsvButton.Text = "Сохранить в CSV";
 			SaveToCsvButton.UseVisualStyleBackColor = true;
+			SaveToCsvButton.Click += SaveToCsvButton_Click;
 			// 
 			// ReturnButton
 			// 
