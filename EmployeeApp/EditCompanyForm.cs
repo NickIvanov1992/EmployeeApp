@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,6 +18,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.Extensions.Logging;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EmployeeApp
 {
@@ -26,14 +29,15 @@ namespace EmployeeApp
 		DataTable table = new();
 		private readonly int companyId;
 		private readonly string companyName;
+		private readonly string sql = "SELECT * FROM Employees " +
+				"JOIN dbo.EmployeesCompanies ON " +
+				"Employees.ID=dbo.EmployeesCompanies.EmployeeId WHERE CompanyId= @id";
 		public EditCompanyForm(int id)
 		{
 			InitializeComponent();
 			appContext = new EF.AppContext();
 			SqlParameter sqlParameter = new SqlParameter("@id", id);
-			employees = appContext.Employees.FromSqlRaw($"SELECT * FROM Employees " +
-				"JOIN dbo.EmployeesCompanies ON " +
-				"Employees.ID=dbo.EmployeesCompanies.EmployeeId WHERE CompanyId= @id", sqlParameter).ToList();
+			employees = appContext.Employees.FromSqlRaw(sql, sqlParameter).ToList();
 
 			table.Columns.Add("Id", typeof(int));
 			table.Columns.Add("Фамилия", typeof(string));
@@ -47,11 +51,11 @@ namespace EmployeeApp
 			EmployeeDataGreed.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 			EmployeeDataGreed.MultiSelect = false;
 			EmployeeDataGreed.RowHeadersVisible = false;
-		//	EmployeeDataGreed.Rows[1].ReadOnly = true;
 
 			companyId = id;
 			this.companyName = appContext.Companies.Find(id).Name;
 			CompanyNameLabel.Text = companyName;
+
 		}
 
 		private void ReturnButton_Click(object sender, EventArgs e)
@@ -170,7 +174,7 @@ namespace EmployeeApp
 
 			if (searchResult.Count() > 0)
 			{
-				for(int i = searchResult.Count() -1; i>=0; i--)
+				for (int i = searchResult.Count() - 1; i >= 0; i--)
 				{
 					var employee = searchResult[i];
 					table.Rows.Add(employee.Id, employee.Surname, employee.Name, employee.Middlename,
@@ -186,6 +190,115 @@ namespace EmployeeApp
 		private void EditCompanyForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			ShowSelectCompanyForm();
+		}
+
+		private void SaveToCsvButton_Click(object sender, EventArgs e)
+		{
+			SaveEmployeesToCSVfile("SaveEmployees.csv", EmployeeDataGreed);
+		}
+		private bool SaveEmployeesToCSVfile(string fileName, DataGridView table)
+		{
+			try
+			{
+				using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.Unicode))
+				{
+					List<int> col_n = new List<int>();
+					foreach (DataGridViewColumn col in table.Columns)
+						if (col.Visible)
+						{
+							sw.Write(col.HeaderText + ";");
+							col_n.Add(col.Index);
+						}
+					sw.WriteLine();
+					int x = table.RowCount;
+					if (table.AllowUserToAddRows) 
+						x--;
+
+					for (int i = 0; i < x; i++)
+					{
+						for (int y = 0; y < col_n.Count; y++)
+							sw.Write(table[col_n[y], i].Value + ";");
+						sw.Write(" \r\n");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+				return false;
+			}
+			return true;
+		}
+		private DataTable ReadFromCSVfile(string fileName)
+		{
+			DataTable dt = new DataTable();
+			Employee SaveEmployee = new();
+
+			using (StreamReader sr = new StreamReader(fileName, Encoding.Unicode))
+			{
+				string[] headers = sr.ReadLine().Split(';');
+				foreach (string header in headers)
+				{
+					dt.Columns.Add(header);
+				}
+				while (!sr.EndOfStream)
+				{
+					string[] rows = sr.ReadLine().Split(';');
+					DataRow dr = dt.NewRow();
+
+					for (int i = 0; i < headers.Length; i++)
+					{
+						dr[i] = rows[i];
+					}
+					UpdateTransaction(dr);
+					dt.Rows.Add(dr);
+
+				}
+			}
+			return dt;
+		}
+		private async void UpdateTransaction(DataRow dataRow)
+		{
+			using (SqlConnection newconnection = new SqlConnection(Program.connectionString))
+			{
+				await newconnection.OpenAsync();
+				SqlTransaction updateTransaction = newconnection.BeginTransaction();
+				SqlCommand sqlCommand = newconnection.CreateCommand();
+				sqlCommand.Transaction = updateTransaction;
+
+				try
+				{
+					sqlCommand.CommandText = String.Format("SET IDENTITY_INSERT Employees ON");
+					 await sqlCommand.ExecuteNonQueryAsync();
+
+					sqlCommand.CommandText = String.Format("INSERT INTO Employees " +
+						"(Id, Surname, Name, Middlename, DateOfBirth, PassportSeries, PassportNumber)" +
+						"VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}')", dataRow[0], dataRow[1], dataRow[2], dataRow[3], dataRow[4], dataRow[5], dataRow[6]);
+					await sqlCommand.ExecuteNonQueryAsync();
+
+					sqlCommand.CommandText = String.Format("SET IDENTITY_INSERT Employees OFF");
+					await sqlCommand.ExecuteNonQueryAsync();
+
+					sqlCommand.CommandText = String.Format("INSERT INTO EmployeesCompanies " +
+						"VALUES('{0}', '{1}')", companyId, dataRow[0]);
+					sqlCommand.ExecuteNonQueryAsync();
+
+					updateTransaction.CommitAsync();
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Данные сотрудники уже существуют в одной из компаний. \n " +
+						"Вы можете добавить их на подработку в свою компанию");
+					updateTransaction.RollbackAsync();
+				}
+			}
+		}
+
+		private void UploadCsvButton_Click(object sender, EventArgs e)
+		{
+			EmployeeDataGreed.DataSource = ReadFromCSVfile("SaveEmployees.csv");
+			
+			MessageBox.Show("Данные загружены");
 		}
 	}
 }

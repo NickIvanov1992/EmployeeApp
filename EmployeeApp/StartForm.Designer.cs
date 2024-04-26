@@ -100,6 +100,7 @@
 			Controls.Add(label1);
 			Name = "StartForm";
 			Text = "Form1";
+			FormClosed += StartForm_FormClosed;
 			Load += Form1_Load;
 			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
 			ResumeLayout(false);

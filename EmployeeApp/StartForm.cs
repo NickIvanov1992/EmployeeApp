@@ -37,5 +37,11 @@ namespace EmployeeApp
 			deleteCompanyForm.Show();
 			Hide();
 		}
+
+		private void StartForm_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			Dispose();
+			Application.Exit();
+		}
 	}
 }
