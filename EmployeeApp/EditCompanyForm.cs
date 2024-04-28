@@ -158,9 +158,13 @@ namespace EmployeeApp
 
 			Employee employee = appContext.Employees.Find(id);
 
-			EditEmployeeForm editEmployeeForm = new EditEmployeeForm(employee, companyId);
-			editEmployeeForm.Show();
-			Hide();
+			if (employee != null)
+			{
+				EditEmployeeForm editEmployeeForm = new EditEmployeeForm(employee, companyId);
+				editEmployeeForm.Show();
+				Hide();
+			}
+			MessageBox.Show("Отсутствует экземпляр в базе данных");
 		}
 
 		private void SearchButton_Click(object sender, EventArgs e)
@@ -296,6 +300,7 @@ namespace EmployeeApp
 
 		private void UploadCsvButton_Click(object sender, EventArgs e)
 		{
+			EmployeeDataGreed.ClearSelection();
 			EmployeeDataGreed.DataSource = ReadFromCSVfile("SaveEmployees.csv");
 			
 			MessageBox.Show("Данные загружены");

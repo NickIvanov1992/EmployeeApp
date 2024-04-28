@@ -40,8 +40,7 @@ namespace EmployeeApp
 
 		private void StartForm_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			Dispose();
-			Application.Exit();
+			Environment.Exit(0);
 		}
 	}
 }

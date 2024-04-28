@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Configuration;
 using System.Data;
 using System.Drawing;
@@ -14,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace EmployeeApp
 {
@@ -68,19 +70,38 @@ namespace EmployeeApp
 					employee.DateOfBirth = dateTimePicker1.Value;
 					employee.PassportSeries = Convert.ToInt32(textBox5.Text);
 					employee.PassportNumber = Convert.ToInt32(textBox6.Text);
-					appContext.Employees.Add(employee);
-					appContext.SaveChanges();
 
-					sqlCommand.CommandText = String.Format("INSERT INTO dbo.EmployeesCompanies(CompanyId, EmployeeId)" +
-						"VALUES ('{0}', '{1}')", companyId, employee.Id);
+					if(!CheckPerson(employee))
+					{
+						DialogResult result = MessageBox.Show("Такой сотрудник уже существует в другой компании. \n" +
+								"Добавить его в список ваших работников?", "Ошибка", MessageBoxButtons.YesNo);
+						if (result == DialogResult.Yes)
+						{
+							int employeeId = appContext.Employees.Single(
+							e => e.PassportSeries == employee.PassportSeries && e.PassportNumber == employee.PassportNumber).Id;
+							if (CheckPerson(employee))
+							{
+								sqlCommand.CommandText = String.Format($"INSERT INTO dbo.EmployeesCompanies VALUES('{companyId}', '{employeeId}')");
+								await sqlCommand.ExecuteNonQueryAsync();
+							}
+							else
+								MessageBox.Show("Сотрудник уже существует в данно компании");			
+						}
+						else
+							throw new ArgumentException("Такой сотрудник уже существует");
+					}
+					else
+					{
+						appContext.Employees.Add(employee);
+						appContext.SaveChanges();
 
-					await sqlCommand.ExecuteNonQueryAsync();
+						sqlCommand.CommandText = String.Format("INSERT INTO dbo.EmployeesCompanies(CompanyId, EmployeeId)" +
+							"VALUES ('{0}', '{1}')", companyId, employee.Id);
+						await sqlCommand.ExecuteNonQueryAsync();
 
+						MessageBox.Show("Сотрудник добавлен");
+					}
 					await transaction.CommitAsync();
-
-					
-
-					MessageBox.Show("Сотрудник добавлен");
 
 					ShowEditCompanyForm();
 				}
@@ -91,6 +112,19 @@ namespace EmployeeApp
 				}
 			}
 
+		}
+		private bool CheckPerson(Employee emp)
+		{
+			//string passportNumber = emp.PassportSeries.ToString() + emp.PassportNumber.ToString();
+			var searchPersonByPassport = appContext.Employees.Any(
+				e => e.PassportSeries == emp.PassportSeries && e.PassportNumber == emp.PassportNumber);
+			
+			if (searchPersonByPassport)
+			{
+
+				return false;
+			}
+			return true;
 		}
 
 		private void button2_Click(object sender, EventArgs e)

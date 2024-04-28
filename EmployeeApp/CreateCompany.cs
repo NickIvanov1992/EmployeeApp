@@ -51,11 +51,17 @@ namespace EmployeeApp
 			company.UAdress = UAdressTextBox.Text;
 			company.FactAdress = FactAdressTextBox.Text;
 
-			appContext.Companies.Add(company);
-			appContext.SaveChanges();
-			MessageBox.Show("Компания создана");
+			var compareInn = appContext.Companies.FirstOrDefault(c => c.INN == company.INN);
+			if (compareInn is null)
+			{
+				appContext.Companies.Add(company);
+				appContext.SaveChanges();
+				MessageBox.Show("Компания создана");
 
-			ShowStartForm();
+				ShowStartForm();
+			}
+			else
+				MessageBox.Show("Такая компания уже существует");		
 		}
 		private void ShowStartForm()
 		{
