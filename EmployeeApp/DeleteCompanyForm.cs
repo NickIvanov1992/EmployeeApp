@@ -1,23 +1,13 @@
 ﻿using EmployeeApp.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.DirectoryServices;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+
 
 namespace EmployeeApp
 {
 	public partial class DeleteCompanyForm : Form
 	{
-		EF.AppContext appContext;
-		DataTable table = new();
+		private readonly EF.AppContext appContext;
+		private readonly DataTable table = new();
 		public DeleteCompanyForm()
 		{
 			InitializeComponent();
@@ -80,17 +70,15 @@ namespace EmployeeApp
 			try
 			{
 				Company company = appContext.Companies.SingleOrDefault(c => c.INN == field
-			|| c.Name.ToLower().Contains(field.ToLower()));
+				|| c.Name.ToLower().Contains(field.ToLower()));
 				table.Rows.Add(company.Id, company.Name, company.INN);
 				SearchCompanyDataGrid.DataSource = table;
 			}
 			catch
 			{
 				MessageBox.Show("Ничего не выбрано");
-			}
-			
+			}		
 		}
-
 		private void DeleteTextBox_TextChanged(object sender, EventArgs e)
 		{
 

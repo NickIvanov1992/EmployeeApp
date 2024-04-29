@@ -1,21 +1,12 @@
-﻿using EmployeeApp.EF;
-using EmployeeApp.Models;
+﻿using EmployeeApp.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+
 
 namespace EmployeeApp
 {
 	public partial class EditEmployeeForm : Form
 	{
-		EF.AppContext appContext;
+		private readonly EF.AppContext appContext;
 		private readonly Employee employee;
 		private readonly int companyId;
 		public EditEmployeeForm(Employee employee, int companyId)

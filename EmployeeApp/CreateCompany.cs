@@ -1,22 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using EmployeeApp.EF;
-using EmployeeApp.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using EmployeeApp.Models;
+
 
 namespace EmployeeApp
 {
 	public partial class CreateCompany : Form
 	{
-		EF.AppContext appContext;
+		private readonly EF.AppContext appContext;
 		public CreateCompany()
 		{
 			InitializeComponent();
@@ -51,11 +40,17 @@ namespace EmployeeApp
 			company.UAdress = UAdressTextBox.Text;
 			company.FactAdress = FactAdressTextBox.Text;
 
-			appContext.Companies.Add(company);
-			appContext.SaveChanges();
-			MessageBox.Show("Компания создана");
+			var compareInn = appContext.Companies.FirstOrDefault(c => c.INN == company.INN);
+			if (compareInn is null)
+			{
+				appContext.Companies.Add(company);
+				appContext.SaveChanges();
+				MessageBox.Show("Компания создана");
 
-			ShowStartForm();
+				ShowStartForm();
+			}
+			else
+				MessageBox.Show("Такая компания уже существует");		
 		}
 		private void ShowStartForm()
 		{

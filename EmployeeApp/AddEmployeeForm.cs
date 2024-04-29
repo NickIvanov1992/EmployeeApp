@@ -1,25 +1,12 @@
-﻿using EmployeeApp.EF;
-using EmployeeApp.Models;
+﻿using EmployeeApp.Models;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Linq;
+
 
 namespace EmployeeApp
 {
 	public partial class AddEmployeeForm : Form
 	{
-		EF.AppContext appContext;
+		private readonly EF.AppContext appContext;
 		private readonly int companyId;
 
 		public AddEmployeeForm(int id)
@@ -68,19 +55,39 @@ namespace EmployeeApp
 					employee.DateOfBirth = dateTimePicker1.Value;
 					employee.PassportSeries = Convert.ToInt32(textBox5.Text);
 					employee.PassportNumber = Convert.ToInt32(textBox6.Text);
-					appContext.Employees.Add(employee);
-					appContext.SaveChanges();
 
-					sqlCommand.CommandText = String.Format("INSERT INTO dbo.EmployeesCompanies(CompanyId, EmployeeId)" +
-						"VALUES ('{0}', '{1}')", companyId, employee.Id);
+					if(!CheckPerson(employee))
+					{
+						DialogResult result = MessageBox.Show("Такой сотрудник уже существует в другой компании. \n" +
+								"Добавить его в список ваших работников?", "Ошибка", MessageBoxButtons.YesNo);
+						if (result == DialogResult.Yes)
+						{
+							int employeeId = appContext.Employees.Single(
+							e => e.PassportSeries == employee.PassportSeries && e.PassportNumber == employee.PassportNumber).Id;
+							Company com = appContext.Companies.Single(c => c.Id == companyId);
+							if (!com.Employees.Any(e => e.Id == employeeId))
+							{
+								sqlCommand.CommandText = String.Format($"INSERT INTO dbo.EmployeesCompanies VALUES('{companyId}', '{employeeId}')");
+								await sqlCommand.ExecuteNonQueryAsync();
+							}
+							else
+								MessageBox.Show("Сотрудник уже существует в данно компании");			
+						}
+						else
+							throw new ArgumentException("Такой сотрудник уже существует");
+					}
+					else
+					{
+						appContext.Employees.Add(employee);
+						appContext.SaveChanges();
 
-					await sqlCommand.ExecuteNonQueryAsync();
+						sqlCommand.CommandText = String.Format("INSERT INTO dbo.EmployeesCompanies(CompanyId, EmployeeId)" +
+							"VALUES ('{0}', '{1}')", companyId, employee.Id);
+						await sqlCommand.ExecuteNonQueryAsync();
 
+						MessageBox.Show("Сотрудник добавлен");
+					}
 					await transaction.CommitAsync();
-
-					
-
-					MessageBox.Show("Сотрудник добавлен");
 
 					ShowEditCompanyForm();
 				}
@@ -90,7 +97,16 @@ namespace EmployeeApp
 					await transaction.RollbackAsync();
 				}
 			}
-
+		}
+		private bool CheckPerson(Employee emp)
+		{
+			var searchPersonByPassport = appContext.Employees.Any(
+				e => e.PassportSeries == emp.PassportSeries && e.PassportNumber == emp.PassportNumber);
+			
+			if (searchPersonByPassport)
+				return false;
+	
+			return true;
 		}
 
 		private void button2_Click(object sender, EventArgs e)
