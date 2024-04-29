@@ -1,22 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using EmployeeApp.EF;
-using EmployeeApp.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using EmployeeApp.Models;
+
 
 namespace EmployeeApp
 {
 	public partial class CreateCompany : Form
 	{
-		EF.AppContext appContext;
+		private readonly EF.AppContext appContext;
 		public CreateCompany()
 		{
 			InitializeComponent();

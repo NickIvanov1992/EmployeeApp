@@ -14,19 +14,15 @@ using EmployeeApp.EF;
 using EmployeeApp.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Microsoft.Extensions.Logging;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
 
 namespace EmployeeApp
 {
 	public partial class EditCompanyForm : Form
 	{
-		EF.AppContext appContext;
-		List<Employee> employees = new List<Employee>();
-		DataTable table = new();
+		private readonly EF.AppContext appContext;
+		private readonly List<Employee> employees = new List<Employee>();
+		private readonly DataTable table = new();
 		private readonly int companyId;
 		private readonly string companyName;
 		private readonly string sql = "SELECT * FROM Employees " +
@@ -55,7 +51,6 @@ namespace EmployeeApp
 			companyId = id;
 			this.companyName = appContext.Companies.Find(id).Name;
 			CompanyNameLabel.Text = companyName;
-
 		}
 
 		private void ReturnButton_Click(object sender, EventArgs e)
@@ -111,7 +106,7 @@ namespace EmployeeApp
 				try
 				{
 					sqlCommand.CommandText = String.Format("DELETE FROM dbo.EmployeesCompanies " +
-					"WHERE EmployeeId = '{0}'", id);
+					"WHERE EmployeeId = '{0}' AND CompanyId = '{1}'", id,companyId);
 					await sqlCommand.ExecuteNonQueryAsync();
 
 					if (numRows <= 1)
@@ -120,7 +115,6 @@ namespace EmployeeApp
 						"WHERE Id = {0}", id);
 						await sqlCommand.ExecuteNonQueryAsync();
 					}
-
 					await transaction.CommitAsync();
 					MessageBox.Show("Сотрудник удален");
 				}
@@ -157,14 +151,9 @@ namespace EmployeeApp
 				return;
 
 			Employee employee = appContext.Employees.Find(id);
-
-			if (employee != null)
-			{
-				EditEmployeeForm editEmployeeForm = new EditEmployeeForm(employee, companyId);
-				editEmployeeForm.Show();
-				Hide();
-			}
-			MessageBox.Show("Отсутствует экземпляр в базе данных");
+			EditEmployeeForm editEmployeeForm = new EditEmployeeForm(employee, companyId);
+			editEmployeeForm.Show();
+			Hide();
 		}
 
 		private void SearchButton_Click(object sender, EventArgs e)
@@ -176,9 +165,9 @@ namespace EmployeeApp
 
 			table.Clear();
 
-			if (searchResult.Count() > 0)
+			if (searchResult.Length > 0)
 			{
-				for (int i = searchResult.Count() - 1; i >= 0; i--)
+				for (int i = searchResult.Length - 1; i >= 0; i--)
 				{
 					var employee = searchResult[i];
 					table.Rows.Add(employee.Id, employee.Surname, employee.Name, employee.Middlename,
@@ -200,7 +189,7 @@ namespace EmployeeApp
 		{
 			SaveEmployeesToCSVfile("SaveEmployees.csv", EmployeeDataGreed);
 		}
-		private bool SaveEmployeesToCSVfile(string fileName, DataGridView table)
+		private static bool SaveEmployeesToCSVfile(string fileName, DataGridView table)
 		{
 			try
 			{
@@ -225,6 +214,7 @@ namespace EmployeeApp
 						sw.Write(" \r\n");
 					}
 				}
+				MessageBox.Show("Данные сохранены");
 			}
 			catch (Exception ex)
 			{
@@ -248,18 +238,18 @@ namespace EmployeeApp
 				while (!sr.EndOfStream)
 				{
 					string[] rows = sr.ReadLine().Split(';');
-					DataRow dr = dt.NewRow();
+					DataRow dr = table.NewRow();
 
-					for (int i = 0; i < headers.Length; i++)
+					for (int i = 0; i < table.Columns.Count; i++)
 					{
 						dr[i] = rows[i];
 					}
-					UpdateTransaction(dr);
-					dt.Rows.Add(dr);
+					table.Rows.Add(dr);
 
+					UpdateTransaction(dr);
 				}
 			}
-			return dt;
+			return table;
 		}
 		private async void UpdateTransaction(DataRow dataRow)
 		{
@@ -275,34 +265,35 @@ namespace EmployeeApp
 					sqlCommand.CommandText = String.Format("SET IDENTITY_INSERT Employees ON");
 					 await sqlCommand.ExecuteNonQueryAsync();
 
-					sqlCommand.CommandText = String.Format("INSERT INTO Employees " +
+					if (!appContext.Employees.Any(a => a.Id == Convert.ToInt32(dataRow[0])))
+					{
+						sqlCommand.CommandText = String.Format("INSERT INTO Employees " +
 						"(Id, Surname, Name, Middlename, DateOfBirth, PassportSeries, PassportNumber)" +
 						"VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}')", dataRow[0], dataRow[1], dataRow[2], dataRow[3], dataRow[4], dataRow[5], dataRow[6]);
-					await sqlCommand.ExecuteNonQueryAsync();
-
+						await sqlCommand.ExecuteNonQueryAsync();
+					}
+					
 					sqlCommand.CommandText = String.Format("SET IDENTITY_INSERT Employees OFF");
 					await sqlCommand.ExecuteNonQueryAsync();
 
 					sqlCommand.CommandText = String.Format("INSERT INTO EmployeesCompanies " +
 						"VALUES('{0}', '{1}')", companyId, dataRow[0]);
-					sqlCommand.ExecuteNonQueryAsync();
+					await sqlCommand.ExecuteNonQueryAsync();
 
-					updateTransaction.CommitAsync();
+					await updateTransaction.CommitAsync();
 				}
 				catch (Exception ex)
 				{
 					MessageBox.Show("Данные сотрудники уже существуют в одной из компаний. \n " +
 						"Вы можете добавить их на подработку в свою компанию");
-					updateTransaction.RollbackAsync();
+					await updateTransaction.RollbackAsync();
 				}
 			}
 		}
 
 		private void UploadCsvButton_Click(object sender, EventArgs e)
 		{
-			EmployeeDataGreed.ClearSelection();
-			EmployeeDataGreed.DataSource = ReadFromCSVfile("SaveEmployees.csv");
-			
+			EmployeeDataGreed.DataSource = ReadFromCSVfile("SaveEmployees.csv");			
 			MessageBox.Show("Данные загружены");
 		}
 	}

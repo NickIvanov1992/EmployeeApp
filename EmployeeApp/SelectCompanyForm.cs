@@ -1,23 +1,14 @@
 ﻿using EmployeeApp.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+
 
 namespace EmployeeApp
 {
 	public partial class SelectCompanyForm : Form
 	{
-		EF.AppContext appContext;
-		List<Company> companies = new List<Company>();
-		DataTable table = new();
+		private readonly EF.AppContext appContext;
+		private readonly List<Company> companies = new List<Company>();
+		private readonly DataTable table = new();
 		public SelectCompanyForm()
 		{
 			InitializeComponent();
@@ -51,7 +42,7 @@ namespace EmployeeApp
 
 			table.Clear();
 
-			if (companies.Count() > 0)
+			if (companies.Length > 0)
 			{
 				foreach (var company in companies)
 					table.Rows.Add(company.Id, company.Name, company.INN);

@@ -1,27 +1,12 @@
-﻿using EmployeeApp.EF;
-using EmployeeApp.Models;
+﻿using EmployeeApp.Models;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Configuration;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
 
 namespace EmployeeApp
 {
 	public partial class AddEmployeeForm : Form
 	{
-		EF.AppContext appContext;
+		private readonly EF.AppContext appContext;
 		private readonly int companyId;
 
 		public AddEmployeeForm(int id)
@@ -79,7 +64,8 @@ namespace EmployeeApp
 						{
 							int employeeId = appContext.Employees.Single(
 							e => e.PassportSeries == employee.PassportSeries && e.PassportNumber == employee.PassportNumber).Id;
-							if (CheckPerson(employee))
+							Company com = appContext.Companies.Single(c => c.Id == companyId);
+							if (!com.Employees.Any(e => e.Id == employeeId))
 							{
 								sqlCommand.CommandText = String.Format($"INSERT INTO dbo.EmployeesCompanies VALUES('{companyId}', '{employeeId}')");
 								await sqlCommand.ExecuteNonQueryAsync();
@@ -111,19 +97,15 @@ namespace EmployeeApp
 					await transaction.RollbackAsync();
 				}
 			}
-
 		}
 		private bool CheckPerson(Employee emp)
 		{
-			//string passportNumber = emp.PassportSeries.ToString() + emp.PassportNumber.ToString();
 			var searchPersonByPassport = appContext.Employees.Any(
 				e => e.PassportSeries == emp.PassportSeries && e.PassportNumber == emp.PassportNumber);
 			
 			if (searchPersonByPassport)
-			{
-
 				return false;
-			}
+	
 			return true;
 		}
 

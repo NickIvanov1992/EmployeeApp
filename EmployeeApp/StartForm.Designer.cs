@@ -73,7 +73,7 @@
 			AddEmployeesButton.Name = "AddEmployeesButton";
 			AddEmployeesButton.Size = new Size(304, 39);
 			AddEmployeesButton.TabIndex = 3;
-			AddEmployeesButton.Text = "Добавить сотрудников";
+			AddEmployeesButton.Text = "Управление сотрудниками";
 			AddEmployeesButton.UseVisualStyleBackColor = true;
 			AddEmployeesButton.Click += AddEmployeesButton_Click;
 			// 
