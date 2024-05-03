@@ -1,15 +1,16 @@
 ﻿using EmployeeApp.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace EmployeeApp.EF
 {
 	public class AppContext : DbContext
 	{
-		string connection = Program.connectionString;
+		private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 		public AppContext() => Database.EnsureCreated();
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlServer(connection);
+			optionsBuilder.UseSqlServer(connectionString);
 		}
 		public DbSet<Employee> Employees { get; set; }
 		public DbSet<Company> Companies { get; set; }

@@ -1,6 +1,6 @@
 ﻿using EmployeeApp.Models;
 using Microsoft.Data.SqlClient;
-
+using System.Configuration;
 
 namespace EmployeeApp
 {
@@ -8,6 +8,7 @@ namespace EmployeeApp
 	{
 		private readonly EF.AppContext appContext;
 		private readonly int companyId;
+		private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
 		public AddEmployeeForm(int id)
 		{
@@ -38,7 +39,7 @@ namespace EmployeeApp
 				WarningLabel.Text = "Не полностью заполнены поля \n Серия или номер паспорта";
 				return;
 			}
-			using (SqlConnection connection = new SqlConnection(Program.connectionString))
+			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
 				connection.Open();
 				SqlTransaction transaction = connection.BeginTransaction();

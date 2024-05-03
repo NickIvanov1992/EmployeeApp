@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -28,6 +29,7 @@ namespace EmployeeApp
 		private readonly string sql = "SELECT * FROM Employees " +
 				"JOIN dbo.EmployeesCompanies ON " +
 				"Employees.ID=dbo.EmployeesCompanies.EmployeeId WHERE CompanyId= @id";
+		private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 		public EditCompanyForm(int id)
 		{
 			InitializeComponent();
@@ -63,7 +65,6 @@ namespace EmployeeApp
 			AddEmployeeForm employeeForm = new AddEmployeeForm(companyId);
 			employeeForm.Show();
 			Hide();
-
 		}
 
 		private void label3_Click(object sender, EventArgs e)
@@ -92,12 +93,12 @@ namespace EmployeeApp
 			if (converted == false)
 				return;
 
-			using (SqlConnection connection = new SqlConnection(Program.connectionString))
+			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
 				SqlCommand countEmployees = new SqlCommand($"SELECT COUNT(*) FROM dbo.EmployeesCompanies WHERE EmployeeId = '{id}'", connection);
 				await connection.OpenAsync();
 
-				int numRows = (int)countEmployees.ExecuteScalar();
+				int numRows =  (int)await countEmployees.ExecuteScalarAsync();
 
 				SqlTransaction transaction = connection.BeginTransaction();
 				SqlCommand sqlCommand = connection.CreateCommand();
@@ -253,7 +254,7 @@ namespace EmployeeApp
 		}
 		private async void UpdateTransaction(DataRow dataRow)
 		{
-			using (SqlConnection newconnection = new SqlConnection(Program.connectionString))
+			using (SqlConnection newconnection = new SqlConnection(connectionString))
 			{
 				await newconnection.OpenAsync();
 				SqlTransaction updateTransaction = newconnection.BeginTransaction();
