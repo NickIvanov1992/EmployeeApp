@@ -122,7 +122,7 @@
 			Name = "SelectCompanyForm";
 			Text = "SelectCompanyForm";
 			FormClosing += SelectCompanyForm_FormClosing;
-			Load += SelectCompanyForm_Load;
+			Load += SelectCompanyForm_LoadAsync;
 			((System.ComponentModel.ISupportInitialize)CompaniesDataGridView).EndInit();
 			ResumeLayout(false);
 			PerformLayout();

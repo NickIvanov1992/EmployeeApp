@@ -1,6 +1,6 @@
 ﻿using EmployeeApp.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
-
 
 namespace EmployeeApp
 {
@@ -34,11 +34,11 @@ namespace EmployeeApp
 			Hide();
 		}
 
-		private void SearchButton_Click(object sender, EventArgs e)
+		private async void SearchButton_Click(object sender, EventArgs e)
 		{
 			string searchCompany = SearchCompanyTextBox.Text;
-			Company[] companies = appContext.Companies.Where(c => c.Name.ToLower().Contains(searchCompany.ToLower())
-								|| c.INN.Contains(searchCompany)).ToArray();
+			Company[] companies = await appContext.Companies.Where(c => c.Name.ToLower().Contains(searchCompany.ToLower())
+								|| c.INN.Contains(searchCompany)).ToArrayAsync();
 
 			table.Clear();
 
@@ -58,9 +58,9 @@ namespace EmployeeApp
 
 		}
 
-		private void SelectCompanyForm_Load(object sender, EventArgs e)
+		private async void SelectCompanyForm_LoadAsync(object sender, EventArgs e)
 		{
-			List<Company> companies = appContext.Companies.ToList();
+			List<Company> companies = await appContext.Companies.ToListAsync();
 			for (int i = 0; i < companies.Count(); i++)
 			{
 				table.Rows.Add(companies[i].Id, companies[i].Name, companies[i].INN);

@@ -1,4 +1,5 @@
 ﻿using EmployeeApp.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 
@@ -21,7 +22,7 @@ namespace EmployeeApp
 			SearchCompanyDataGrid.RowHeadersVisible = false;
 		}
 
-		private void DeleteButton_Click(object sender, EventArgs e)
+		private async void DeleteButton_Click(object sender, EventArgs e)
 		{
 			if (SearchCompanyDataGrid.SelectedRows.Count < 1)
 				return;
@@ -33,11 +34,11 @@ namespace EmployeeApp
 			if (!converted)
 				return;
 
-			Company company = appContext.Companies.Find(id);
+			Company? company = await appContext.Companies.FindAsync(id);
 			if (company != null)
 			{
-				appContext.Remove(company);
-				appContext.SaveChanges();
+				 appContext.Remove(company);
+				await appContext.SaveChangesAsync();
 				MessageBox.Show("Компания удалена");
 			}
 			else
@@ -64,12 +65,12 @@ namespace EmployeeApp
 		{
 		}
 
-		private void SearchButton_Click(object sender, EventArgs e)
+		private async void SearchButton_Click(object sender, EventArgs e)
 		{
 			var field = DeleteTextBox.Text;
 			try
 			{
-				Company company = appContext.Companies.SingleOrDefault(c => c.INN == field
+				Company? company = await appContext.Companies.SingleOrDefaultAsync(c => c.INN == field
 				|| c.Name.ToLower().Contains(field.ToLower()));
 				table.Rows.Add(company.Id, company.Name, company.INN);
 				SearchCompanyDataGrid.DataSource = table;

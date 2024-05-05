@@ -52,7 +52,7 @@ namespace EmployeeApp
 			employee.PassportNumber = Convert.ToInt32(PassportNumberTextBox.Text);
 
 			appContext.Entry(employee).State = EntityState.Modified;
-			appContext.SaveChanges();
+			appContext.SaveChangesAsync();
 			MessageBox.Show("Данные работника обновлены");
 
 			ShowEditCompanyForm();

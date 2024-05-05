@@ -1,6 +1,7 @@
 ﻿using EmployeeApp.Models;
 using Microsoft.Data.SqlClient;
-
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace EmployeeApp
 {
@@ -8,18 +9,19 @@ namespace EmployeeApp
 	{
 		private readonly EF.AppContext appContext;
 		private readonly int companyId;
+		private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
 		public AddEmployeeForm(int id)
 		{
 			InitializeComponent();
 			appContext = new EF.AppContext();
 			companyId = id;
-			CompanyNameLabel.Text = appContext.Companies.Find(id).Name;
+
 		}
 
 		public void AddEmployeeForm_Load(object sender, EventArgs e)
 		{
-
+			CompanyNameLabel.Text = appContext.Companies.Find(companyId).Name;
 		}
 
 		private async void button1_Click(object sender, EventArgs e)
@@ -38,9 +40,9 @@ namespace EmployeeApp
 				WarningLabel.Text = "Не полностью заполнены поля \n Серия или номер паспорта";
 				return;
 			}
-			using (SqlConnection connection = new SqlConnection(Program.connectionString))
+			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
-				connection.Open();
+				await connection.OpenAsync();
 				SqlTransaction transaction = connection.BeginTransaction();
 				SqlCommand sqlCommand = connection.CreateCommand();
 				sqlCommand.Transaction = transaction;
@@ -62,9 +64,9 @@ namespace EmployeeApp
 								"Добавить его в список ваших работников?", "Ошибка", MessageBoxButtons.YesNo);
 						if (result == DialogResult.Yes)
 						{
-							int employeeId = appContext.Employees.Single(
+							int employeeId = appContext.Employees.SingleAsync(
 							e => e.PassportSeries == employee.PassportSeries && e.PassportNumber == employee.PassportNumber).Id;
-							Company com = appContext.Companies.Single(c => c.Id == companyId);
+							Company com = await appContext.Companies.SingleAsync(c => c.Id == companyId);
 							if (!com.Employees.Any(e => e.Id == employeeId))
 							{
 								sqlCommand.CommandText = String.Format($"INSERT INTO dbo.EmployeesCompanies VALUES('{companyId}', '{employeeId}')");
@@ -78,8 +80,8 @@ namespace EmployeeApp
 					}
 					else
 					{
-						appContext.Employees.Add(employee);
-						appContext.SaveChanges();
+						await appContext.Employees.AddAsync(employee);
+						await appContext.SaveChangesAsync();
 
 						sqlCommand.CommandText = String.Format("INSERT INTO dbo.EmployeesCompanies(CompanyId, EmployeeId)" +
 							"VALUES ('{0}', '{1}')", companyId, employee.Id);
