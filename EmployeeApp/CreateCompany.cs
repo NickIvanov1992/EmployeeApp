@@ -1,5 +1,5 @@
 ﻿using EmployeeApp.Models;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeApp
 {
@@ -17,7 +17,7 @@ namespace EmployeeApp
 			ShowStartForm();
 		}
 
-		private void CreateButton_Click(object sender, EventArgs e)
+		private async void CreateButton_Click(object sender, EventArgs e)
 		{
 			if (string.IsNullOrWhiteSpace(NameCompanyTextBox.Text) ||
 			   string.IsNullOrWhiteSpace(INNTextBox.Text) ||
@@ -40,11 +40,11 @@ namespace EmployeeApp
 			company.UAdress = UAdressTextBox.Text;
 			company.FactAdress = FactAdressTextBox.Text;
 
-			var compareInn = appContext.Companies.FirstOrDefault(c => c.INN == company.INN);
+			var compareInn = await appContext.Companies.FirstOrDefaultAsync(c => c.INN == company.INN);
 			if (compareInn is null)
 			{
-				appContext.Companies.Add(company);
-				appContext.SaveChanges();
+				await appContext.Companies.AddAsync(company);
+				await appContext.SaveChangesAsync();
 				MessageBox.Show("Компания создана");
 
 				ShowStartForm();

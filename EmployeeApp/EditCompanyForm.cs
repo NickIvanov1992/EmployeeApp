@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
@@ -22,10 +23,10 @@ namespace EmployeeApp
 	public partial class EditCompanyForm : Form
 	{
 		private readonly EF.AppContext appContext;
-		private readonly List<Employee> employees = new List<Employee>();
+		private  List<Employee> employees = new List<Employee>();
 		private readonly DataTable table = new();
 		private readonly int companyId;
-		private readonly string companyName;
+		private string companyName;
 		private readonly string sql = "SELECT * FROM Employees " +
 				"JOIN dbo.EmployeesCompanies ON " +
 				"Employees.ID=dbo.EmployeesCompanies.EmployeeId WHERE CompanyId= @id";
@@ -34,8 +35,6 @@ namespace EmployeeApp
 		{
 			InitializeComponent();
 			appContext = new EF.AppContext();
-			SqlParameter sqlParameter = new SqlParameter("@id", id);
-			employees = appContext.Employees.FromSqlRaw(sql, sqlParameter).ToList();
 
 			table.Columns.Add("Id", typeof(int));
 			table.Columns.Add("Фамилия", typeof(string));
@@ -49,10 +48,9 @@ namespace EmployeeApp
 			EmployeeDataGreed.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 			EmployeeDataGreed.MultiSelect = false;
 			EmployeeDataGreed.RowHeadersVisible = false;
+			EmployeeDataGreed.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
 
 			companyId = id;
-			this.companyName = appContext.Companies.Find(id).Name;
-			CompanyNameLabel.Text = companyName;
 		}
 
 		private void ReturnButton_Click(object sender, EventArgs e)
@@ -72,8 +70,16 @@ namespace EmployeeApp
 
 		}
 
-		private void EditCompanyForm_Load(object sender, EventArgs e)
+		private async void EditCompanyForm_Load(object sender, EventArgs e)
 		{
+			SqlParameter sqlParameter = new SqlParameter("@id", companyId);
+			employees = await appContext.Employees.FromSqlRaw(sql, sqlParameter).ToListAsync();
+
+			Company? company = await appContext.Companies.FindAsync(companyId);
+			companyName = company.Name;
+
+			CompanyNameLabel.Text = companyName;
+
 			foreach (var item in employees)
 			{
 				table.Rows.Add(item.Id, item.Surname, item.Name, item.Middlename,
@@ -140,7 +146,7 @@ namespace EmployeeApp
 			Hide();
 		}
 
-		private void EditButton_Click(object sender, EventArgs e)
+		private async void EditButton_Click(object sender, EventArgs e)
 		{
 			if (EmployeeDataGreed.SelectedRows.Count < 1)
 				return;
@@ -151,7 +157,7 @@ namespace EmployeeApp
 			if (!converted)
 				return;
 
-			Employee employee = appContext.Employees.Find(id);
+			Employee? employee = await appContext.Employees.FindAsync(id);
 			EditEmployeeForm editEmployeeForm = new EditEmployeeForm(employee, companyId);
 			editEmployeeForm.Show();
 			Hide();
@@ -188,7 +194,15 @@ namespace EmployeeApp
 
 		private void SaveToCsvButton_Click(object sender, EventArgs e)
 		{
-			SaveEmployeesToCSVfile("SaveEmployees.csv", EmployeeDataGreed);
+
+			SaveFileDialog saveFileDialog = new();
+			saveFileDialog.Filter = "csv files (*.csv) |*.csv";
+			saveFileDialog.FilterIndex = 1;
+			saveFileDialog.RestoreDirectory = true;
+
+			if (saveFileDialog.ShowDialog() == DialogResult.OK)
+				SaveEmployeesToCSVfile(saveFileDialog.FileName, EmployeeDataGreed);
+
 		}
 		private static bool SaveEmployeesToCSVfile(string fileName, DataGridView table)
 		{
@@ -227,7 +241,6 @@ namespace EmployeeApp
 		private DataTable ReadFromCSVfile(string fileName)
 		{
 			DataTable dt = new DataTable();
-			Employee SaveEmployee = new();
 
 			using (StreamReader sr = new StreamReader(fileName, Encoding.Unicode))
 			{
@@ -282,6 +295,7 @@ namespace EmployeeApp
 					await sqlCommand.ExecuteNonQueryAsync();
 
 					await updateTransaction.CommitAsync();
+					MessageBox.Show("Данные загружены");
 				}
 				catch (Exception ex)
 				{
@@ -294,8 +308,13 @@ namespace EmployeeApp
 
 		private void UploadCsvButton_Click(object sender, EventArgs e)
 		{
-			EmployeeDataGreed.DataSource = ReadFromCSVfile("SaveEmployees.csv");			
-			MessageBox.Show("Данные загружены");
+			OpenFileDialog openFileDialog = new();
+			openFileDialog.Filter = "csv files (*.csv) |*.csv";
+			openFileDialog.FilterIndex = 1;
+			openFileDialog.RestoreDirectory = true;
+
+			if(openFileDialog.ShowDialog() == DialogResult.OK)
+				EmployeeDataGreed.DataSource = ReadFromCSVfile(openFileDialog.FileName);
 		}
 	}
 }
